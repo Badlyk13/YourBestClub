@@ -1,0 +1,26 @@
+{% load static %}
+<div class="row mb-3 d-none d-sm-block">
+  <div class="col-12">
+    <div class="menu">
+      <ul class="hr">
+        <li><a class="img-nav" href="/"><img class="nav-img" src="{% static '/logo2.png' %}" alt="" width="64" height="64"></a></li>
+        <li><a class="revers" href="{}">Кабинет</a></li>
+        <li><a class="revers" href="{}">Расписание</a></li>
+        {% if user.trainer %}
+        <li><a class="revers" href="{% url 'trainers_statistic' user.trainer.club.pk user.trainer.pk %}">Статистика</a></li>
+        {% elif user.director %}
+        <li><a class="revers" href="{}">Статистика</a></li>
+        {% endif %}
+
+        <li><a class="revers" href="{}">Новости</a></li>
+        <li><a class="revers" href="{}">Финансы</a></li>
+        <li>
+        {% if request.user.is_authenticated %}
+        <a class="revers" href="{% url 'logout' %}"><i class="bi bi-box-arrow-left"></i> Выйти</a>
+        {% else %}
+        <a class="revers" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Войти</a>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>

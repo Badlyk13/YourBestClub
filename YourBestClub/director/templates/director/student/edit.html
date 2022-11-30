@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+    <h3>{{ title }}</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 col-md-8 ps-4">
+    <form method="post" enctype="multipart/form-data">  {% csrf_token %}
+      <div class="form-group">
+        <p>
+          <label for="{{ form.surname.id_for_label }}">{{ form.surname.label_tag }}</label>
+          <input type="text" name="surname" class="form-control" maxlength="150" value="{{ student.surname }}" required id="{{ form.surname.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.name.id_for_label }}">{{ form.name.label_tag }}</label>
+          <input type="text" name="name" class="form-control" maxlength="150" value="{{ student.name }}" required id="{{ form.name.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.soname.id_for_label }}">{{ form.soname.label_tag }}</label>
+          <input type="text" name="soname" class="form-control" maxlength="150" value="{{ student.soname }}" id="{{ form.soname.id_for_label }}">
+        </p>
+        <p>
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              <label for="blah">{{ form.avatar.label_tag }}    </label>
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              <img id='blah' class="avatar thumbnail" alt="{{ form.surname.value }}" src="{{ student.avatar.url }}"/>
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 5px; margin-right: 0px;">
+              <input class="image" type="file" name="avatar" accept="image/*" id="id_avatar">
+            </li>
+          </ul>
+        </p>
+        <p>
+          <label for="{{ form.birthday.id_for_label }}">{{ form.birthday.label_tag }}</label>
+          <input type="date" name="birthday" class="form-control" maxlength="50" value="{{ student.birthday|date:'Y-m-d' }}" id="{{ form.birthday.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.agent_name.id_for_label }}">{{ form.agent_name.label_tag }}</label>
+          <input type="text" name="agent_name" class="form-control" maxlength="100" value="{{ student.agent_name }}" id="{{ form.agent_name.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.agent_phone.id_for_label }}">{{ form.agent_phone.label_tag }}</label>
+          <input type="tel" class="form-control" name="agent_phone" pattern='(\+7|7|8)+[0-9]{10}' value="{{ student.agent_phone }}" maxlength="16" required id="{{ form.agent_phone.id_for_label }}" placeholder="+79123456789">
+        </p>
+        <p>
+          <label for="{{ form.group.id_for_label }}">{{ form.group.label_tag }}</label>
+          <select class="form-select"  name="group" id="{{ form.group.id_for_label }}" required>
+            {% for gr in form.group %}
+              {% if gr.data.selected %}
+                <option value="{{ gr.data.value }}" selected>{{ gr.data.label }}</option>
+                {% else %}
+                <option value="{{ gr.data.value }}">{{ gr.data.label }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </p>
+      {% endif %}
+        <p align="right">
+          <button class="save-button" type="submit">Сохранить</button>
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="col-3">
+  </div>
+</div>
+<script>
+{{ form.avatar.id_for_label }}.onchange = evt => {
+  const [file] = {{ form.avatar.id_for_label }}.files
+  if (file) {
+    blah.src = URL.createObjectURL(file)
+  }
+}
+
+</script>
+{% endblock %}

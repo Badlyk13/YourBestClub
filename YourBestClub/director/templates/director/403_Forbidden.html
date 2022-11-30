@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-9">
+      <div class="row">
+        <div class="col-12 mb-3 ms-3">
+          <br>
+          <h3><span class='mylinks'><i class="bi bi-x-octagon"></i> Доступ запрещен! {{ slug }} {{ password }}</span></h3>
+        </div>
+      </div>
+      <div class="col-12 mb-3 ms-3">
+        <div class="col">
+          <p> У вас недостаточно прав, для просмотра этой страницы!
+            Если вы с этим не согласны - обратитесь к администратору.</p>
+          <br>
+          <p align="left">
+            <a class='mylinks' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}
+
+
+
+

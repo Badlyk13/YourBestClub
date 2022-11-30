@@ -9,7 +9,11 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+<<<<<<< HEAD
 
+=======
+import os
+>>>>>>> 8ddd388 (Initial commit)
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
+=======
+    'django_celery_beat',
+    'director.apps.DirectorConfig',
+    'news.apps.NewsConfig',
+    'services.apps.ServicesConfig'
+>>>>>>> 8ddd388 (Initial commit)
 ]
 
 MIDDLEWARE = [
@@ -54,7 +65,11 @@ ROOT_URLCONF = 'YourBestClub.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+<<<<<<< HEAD
         'DIRS': [],
+=======
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+>>>>>>> 8ddd388 (Initial commit)
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,12 +90,25 @@ WSGI_APPLICATION = 'YourBestClub.wsgi.application'
 
 DATABASES = {
     'default': {
+<<<<<<< HEAD
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+=======
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'u1832522_yourbestclub_0',
+        'USER': 'u1832522_badlyk',
+        'PASSWORD': 'eyerteyert13',
+        'HOST': 'server166.hosting.reg.ru',
+        'OPTIONS': {'sql_mode': 'traditional', }
+>>>>>>> 8ddd388 (Initial commit)
     }
 }
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8ddd388 (Initial commit)
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -103,6 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
+<<<<<<< HEAD
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -117,7 +146,47 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+=======
+
+LANGUAGE_CODE = 'ru-ru'
+
+TIME_ZONE = 'Europe/Moscow'
+
+USE_I18N = True
+# USE_L10N = False
+USE_TZ = True
+
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/login/'
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'YourBestClub/static')
+]
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+>>>>>>> 8ddd388 (Initial commit)
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+<<<<<<< HEAD
+=======
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'django_cache'),
+    }
+}
+
+TELEGRAM_BOT_API_KEY = '5665176467:AAFHLsuRkdYo9L6UQPSRrhlfH6-x-JykjAA'
+TELEGRAM_BOT_URI = 'https://t.me/YourBestClubBot?start='
+
+BASE_HOST = 'https://yourbestclub.ru'
+
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+>>>>>>> 8ddd388 (Initial commit)

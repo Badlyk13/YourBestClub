@@ -1,0 +1,31 @@
+{% load static %}
+            {% comment %}
+
+  <nav class="navbar fixed-bottom">
+    <div class="container-fluid p-0">
+      <p class="text-center">
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item">
+            <a href="{% url 'club_schedule' 0 %}"><i class="bi bi-list-stars" style="font-size: 2.3rem;"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a href="{% url 'club_finances' 0 %}"><i class="bi bi-wallet-fill" style="font-size: 2.3rem;"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a href="{% url 'office' %}"><i class="bi bi-person-lines-fill" style="font-size: 2.3rem;"></i></a>
+          </li>
+          <li class="list-inline-item">
+            <a href="{% url 'news' %}"><i class="bi bi-newspaper" style="font-size: 2.3rem;"></i></a>
+          </li>
+          <li class="list-inline-item">
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-left" style="font-size: 2.3rem;"></i></a>
+            {% else %}
+            <a href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right" style="font-size: 2.3rem;"></i></a>
+            {% endif %}
+          </li>
+        </ul>
+      </p>
+    </div>
+  </nav>
+            {% endcomment %}

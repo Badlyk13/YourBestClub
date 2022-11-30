@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+        <h3>{{ title }}</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-8 ps-4">
+      <form method="post">
+        <div class="form-group">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="d-grid gap-2">
+            <span class="text-end">
+            <button class="save-button" type="submit">Войти</button>
+              </span>
+          </div>
+          <p><br>
+            Не знаешь логин и пароль? Самое время <a href="{% url 'choice_type' %}" class="black">зарегистрироваться!</a>
+          </p>
+        </div>
+      </form>
+    </div>
+</div>
+{% endblock %}
+

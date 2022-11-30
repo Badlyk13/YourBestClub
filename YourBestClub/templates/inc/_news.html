@@ -1,0 +1,37 @@
+{% load news_tags %}
+<hr>
+<div class="container p-3">
+  <div class="row">
+    <div class="col-12">
+      <p class="text-start">
+        Последние новости:
+      </p>
+    </div>
+  </div>
+  <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+    {% get_news as news %}
+    {% for new in news %}
+    <div class="col text-center">
+      <div class="card">
+        <img src="{{ new.photo.url }}" class="card-img-top" alt="{{ new.title }}">
+        <div class="card-img-overlay">
+          <a href="{{ new.get_absolute_url }}">
+            <table style="height: 100%; weight: 100%; table-layout: fixed;">
+              <tr>
+                <td class="align-bottom" style="width: 1000px;">
+                  <p class="card-footer text-start" style="font-size: medium; line-height: 0.8em; padding: 0.5em">
+                    <span class="second">{{ new.title|safe|truncatewords:6 }}</span>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+

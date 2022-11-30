@@ -1,0 +1,442 @@
+/* Brand book 🔸Фирменные цвета ✔️коричневый #62523f ✔️серый #c5c5c5 ✔️оранжевый #c93c11 🔸Фирменные шрифты Oswald Montserrat */
+
+body {
+
+  font-family: Montserrat, sans-serif;
+  color: #c5c5c5;
+  background: url('../back.jpg');
+  background-repeat: repeat;
+  /* text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5); */
+}
+
+a {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 7px #c5c5c5;
+}
+
+a:hover{
+  text-decoration: none;
+  color: #c5c5c5;
+  text-shadow: 0px 0px 5px #c5c5c5;
+}
+
+a.black {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 7px black;
+}
+
+a.black:hover {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 10px #c5c5c5;
+}
+
+a.revers {
+  text-decoration: none;
+  color: #c5c5c5;
+  text-shadow: 0px 0px 5px black;
+}
+
+a.revers:hover {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 5px black;
+}
+
+a.back{
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 7px black;
+}
+
+a.back:hover {
+  text-decoration: none;
+  color: #c5c5c5;
+  text-shadow: 0px 0px 5px #c5c5c5;
+}
+
+a.image .img-fluid.rounded{
+  background-color: transparent;
+    box-shadow: 0px 0px 7px black;
+}
+
+a.image .img-fluid.rounded:hover{
+  background-color: transparent;
+  box-shadow: 0px 0px 30px black;
+  transform: translateY(-3px)
+}
+/* ui a.schedule {
+  text-decoration: none;
+  color: #c93c11;
+  font-weight: bold;
+  text-shadow: 0;
+}
+
+ui a.schedule:hover {
+  text-decoration: none;
+  color: #c93c11;
+  font-weight: bold;
+} */
+
+.user-type-button{
+  font-family: Oswald;
+  text-shadow: 0px 0px 5px black;
+  background-color: #c93c11;
+  border: 1px solid;
+  color: #c5c5c5;
+  padding: 14px 32px 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 24px;
+  border-radius: 0.375em;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.user-type-button:hover {
+  box-shadow: 0px 0px 30px black;
+    transform: translateY(-3px)
+}
+
+
+.bi.bi-pencil-square{
+    text-shadow: 0px 0px 5px black;
+}
+
+h1, h2, h3, h4, h6{
+  font-family: Oswald;
+    text-shadow: 0px 0px 5px black;
+}
+
+h5{
+    font-family: Oswald;
+    text-shadow: 0px 0px 5px black;
+}
+
+p{
+    text-shadow: 0px 0px 5px black;
+}
+p.second{
+  font-family: Oswald;
+    text-shadow: 0px 0px 5px black;
+}
+
+small{
+    text-shadow: 0px 0px 5px black;
+}
+label{
+  font-family: Oswald;
+  font-size: 1.05em;
+}
+.alert {
+  color: #000;
+  text-shadow: 0px 0px 7px #fff;
+}
+
+.badge.rounded-pill{
+  background-color: #c93c11
+}
+
+/* КНОПКИ */
+
+.save-button {
+  background-color: #c93c11;
+  text-shadow: 0px 0px 7px black;
+  text-align: center;
+  color: #c5c5c5;
+  width: 130px;
+  line-height: 40px;
+  margin: 20px 10px;
+  border-radius: 45px;
+  border: 0px;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 1.4);
+}
+
+.delete-button {
+  background-color: #62523f;
+  text-shadow: 0px 0px 7px black;
+  text-align: center;
+  color: #c5c5c5;
+  width: 130px;
+  line-height: 40px;
+  margin: 20px 10px;
+  border-radius: 45px;
+  border: 0px;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 1.4);
+}
+
+.save-button:hover,
+.delete-button:hover {
+  color: #fff;
+  text-shadow: 0px 0px 10px white;
+  box-shadow: 0 0px 40px rgba(0, 0, 0, 1.4);
+  transform: translateY(-5px)
+}
+
+.btn.btn-outline-light.my-color {
+  color: #c5c5c5;
+  border-color: #c5c5c5;
+  box-shadow: 0 0px 10px rgba(0, 0, 0, .8);
+
+}
+
+.btn.btn-outline-light.my-color:hover {
+  color: #c5c5c5;
+  border-color: #c93c11;
+  background-color: #c93c11;
+  box-shadow: 0 0px 30px rgba(0, 0, 0, 1.4);
+  transform: translateY(-5px)
+}
+
+/* Изображения */
+
+.avatar {
+  position: relative;
+  border-radius: 0.375em;
+  width: 250px;
+}
+
+.avatar.thumbnail{
+  border-radius: 0.375em;
+  width: 125px;
+}
+
+.img-fluid.rounded {
+
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 1.4);
+  object-fit: cover;
+}
+
+input.image{
+    font-family: Oswald;
+    background-color: #62523f;
+    font-size: small;
+    text-align: center;
+    color: #c5c5c5;
+    width: 90px;
+    line-height: 25px;
+    border-radius: 45px;
+    border: 0px;
+    box-shadow: 0 0px 20px rgba(0, 0, 0, 0.7);
+}
+
+input.image:active {
+  font-family: Oswald;
+  background-color: #c93c11;
+  font-size: small;
+  text-align: center;
+  color: #c5c5c5;
+  width: 90px;
+  line-height: 25px;
+  border-radius: 45px;
+  border: 0px;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 1.4);
+}
+/* Индивидуальные места */
+
+/* Навбар */
+
+ul.hr {
+  margin: 0;
+  /* Обнуляем значение отступов */
+  padding: 4px;
+  /* Значение полей */
+}
+
+ul.hr li {
+  display: inline;
+  /* Отображать как строчный элемент */
+  margin-right: 5px;
+  /* Отступ слева */
+  /* Рамка вокруг текста */
+  padding: 3px;
+  /* Поля вокруг текста */
+}
+
+.nav-link{
+  color: #c5c5c5;
+}
+.nav-link:hover {
+    color: #c5c5c5;
+    text-shadow: 0px 0px 15px black;
+}
+
+.nav-link.active{
+  color: #c93c11;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+a.img-nav {
+  margin-right: 1.5em;
+}
+
+/* Нижний навбар */
+
+.navbar.fixed-bottom {
+  border-radius: 0.375em;
+  background-color: #c5c5c5;
+  box-shadow: 0px 0px 15px black;
+}
+.list-inline-item{
+  margin: 0.1em;
+  margin-left: 1.2em;
+  margin-right: 1.2em;
+}
+
+/* Аккордеон */
+
+.accordion {
+  --bs-accordion-border-color: #c5c5c5;
+  --bs-accordion-border-width: 1.5px;
+  --bs-accordion-bg: #c5c5c5;
+  box-shadow: 0 0px 30px rgba(0, 0, 0, 0.4);
+  margin-bottom: 1.5em;
+  --bs-accordion-active-color: #c93c11;
+  --bs-accordion-btn-focus-border-color: #c93c11;
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(201, 60, 17, 0.3);
+  --bs-accordion-btn-focus-box-radius: 0.375rem;
+}
+
+
+.accordion:hover {
+  --bs-accordion-border-color: #c5c5c5;
+  box-shadow: 0 0px 30px rgba(0, 0, 0, 1.4);
+  margin-bottom: 1.5em;
+  transform: translateY(-8px)
+}
+
+.accordion-body {
+  padding: 0.5em;
+  ;
+  background-color: #c5c5c5;
+  border-radius: 0.5rem;
+}
+
+.list-group {
+  font-size: small;
+}
+
+.accordion-item {
+  background-color: transparent;
+  border: 0px solid rgba(0, 0, 0, .125);
+}
+
+.accordion-button{
+  padding: 0px;
+  border-radius: 0.4em;
+}
+.accordion-button::after {
+  flex-shrink: 0;
+ 
+  width: 0;
+}
+
+.card {
+  --bs-card-spacer-y: 1rem;
+  --bs-card-spacer-x: 1rem;
+  --bs-card-title-spacer-y: 0.5rem;
+  --bs-card-border-width: 0px;
+  --bs-card-border-color: var(--bs-border-color-translucent);
+  --bs-card-border-radius: 0.375rem;
+  --bs-card-box-shadow: ;
+  --bs-card-inner-border-radius: calc(0.375rem - 1px);
+  --bs-card-cap-padding-y: 0.5rem;
+  --bs-card-cap-padding-x: 1rem;
+  --bs-card-cap-bg: rgba(0, 0, 0, 0.03);
+  --bs-card-cap-color: ;
+  --bs-card-height: ;
+  --bs-card-color: ;
+  --bs-card-bg: #fff;
+  --bs-card-img-overlay-padding: 1rem;
+  --bs-card-group-margin: 0.75rem;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  min-width: 0;
+  height: var(--bs-card-height);
+  word-wrap: break-word;
+  background-color: var(--bs-card-bg);
+  background-clip: border-box;
+  border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+  border-radius: var(--bs-card-border-radius);
+
+  color: #c5c5c5;
+}
+
+.card-img-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0;
+  border-radius: var(--bs-card-inner-border-radius);
+}
+
+.card-footer,
+.card-footer.text-start {
+  font-size: 1em;
+  color: #c5c5c5;
+  text-align: center;
+  width: 100%;
+  padding: 1em;
+  margin-bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-top: var(--bs-card-border-width) solid var(--bs-card-border-color);
+
+  text-shadow: 0px 0px 7px rgba(0, 0, 0, 1.4);
+  box-shadow: 0px 0px 7px rgba(0, 0, 0, 1.4);
+}
+.card-body{
+    font-family: Oswald;
+    text-align: center;
+}
+
+/* ------------------------------------------ */
+
+.container-filter {
+  overflow: hidden;
+
+}
+
+.filterDiv {
+  float: left;
+  color: #c5c5c5;
+  width: 100%;
+  /* line-height: 100px; */
+  text-align: center;
+  margin: 2px;
+  display: none;
+    border: 1px;
+      border-right: 5px;
+  /* Hidden by default */
+}
+
+/* The "show" class is added to the filtered elements */
+.show {
+  display: block;
+}
+
+/* Style the buttons */
+.btn-fin {
+  border: none;
+  outline: none;
+  box-shadow: 0px 0px 5px rgb(0 0 0);
+  background-color: #c5c5c5;
+  cursor: pointer;
+  border-radius: 0.375em;
+
+}
+
+/* Add a light grey background on mouse-over */
+.btn-fin:hover {
+  background-color: #ddd;
+}
+
+/* Add a dark background to the active button */
+.btn-fin.active {
+  background-color: #c93c11;
+  color: white;
+}

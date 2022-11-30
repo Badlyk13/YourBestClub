@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+    <h3>{{ title }}</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 col-md-8 ps-4">
+    <form method="post" enctype="multipart/form-data">  {% csrf_token %}
+      <div class="form-group">
+        <p>
+          <label for="{{ form.surname.id_for_label }}">{{ form.surname.label_tag }}</label>
+          <input type="text" name="surname" class="form-control" maxlength="150" required id="{{ form.surname.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.name.id_for_label }}">{{ form.name.label_tag }}</label>
+          <input type="text" name="name" class="form-control" maxlength="150" required id="{{ form.name.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.soname.id_for_label }}">{{ form.soname.label_tag }}</label>
+          <input type="text" name="soname" class="form-control" maxlength="150" id="{{ form.soname.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.phone.id_for_label }}">{{ form.phone.label_tag }}</label>
+          <input type="tel" class="form-control" name="phone" pattern='(\+7|7|8)+[0-9]{10}' maxlength="16" required id="{{ form.phone.id_for_label }}" placeholder="+79123456789">
+        </p>
+        <p>
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              <label for="blah">{{ form.avatar.label_tag }}    </label>
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              <img id='blah' class="avatar thumbnail" alt="{{ form.surname.value }}" src="/media/no-image.png"/>
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 5px; margin-right: 0px;">
+              <input class="image" type="file" name="avatar" accept="image/*" id="id_avatar">
+            </li>
+          </ul>
+        </p>
+      {% if request.user.director %}
+        <hr>
+        <div id="qty_weeksHelpBlock" class="form-text" style="color: #c5c5c5">
+          <i><small>
+          Если тренер получает только ежемесячный оклад - заполни только Ежемесячный оклад, а в остальных пунктах проставь 0.<br>
+          Если тренер не получает оклад и его зп начисляется за каждую проведенную тренировку - заполните "Ставку за занятие", а в Ежемесячный оклад поставь 0.<br>
+          Если тренер получает и оклад и за каждую тренировку - заполните все поля.</small></i>
+        </div>
+        <hr>
+        <p>
+          <label for="wage">Ежемесячный оклад
+            <small><a class="black" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">💡 Подсказка</a></small>
+          </label>
+          <div class="collapse" id="collapseExample">
+            <div class="form-text mb-2" style="color: #c5c5c5">
+              <i><small>Заполняется при наличии ежемесячного оклада у тренера. Если оклада нет - поставьте 0.</small></i>
+            </div>
+          </div>
+          <input type="number" name="wage" class="form-control" placeholder="Поставьте 0, если оклада нет..." value="{{ trainer.wage }}" maxlength="10" id="wage" required>
+        </p>
+        <p>
+          <label for="cost">Ставка за групповое занятие </label>
+          <input type="number" name="cost" class="form-control" placeholder="Поставьте 0, тренер не получает бонус за каждое занятие.." value="{{ trainer.cost }}" maxlength="10" id="cost" required>
+        </p>
+        <p>
+          <label for="cost_individual">Ставка за индив. занятие </label>
+          <input type="number" name="cost_individual" class="form-control" placeholder="Поставьте 0, тренер не получает бонус за каждое занятие.." value="{{ trainer.cost_individual }}" maxlength="10" id="cost_individual" required>
+        </p>
+        <p>
+          <label for="cost_for_student">Стоимость индив. для ученика </label>
+          <input type="number" name="cost_for_student" class="form-control" placeholder="0" value="{{ trainer.cost_for_student }}" maxlength="10" id="cost_for_student" required>
+        </p>
+      {% endif %}
+        <p align="right">
+          <button class="save-button" type="submit">Сохранить</button>
+        </p>
+      </div>
+    </form>
+  </div>
+  <div class="col-3">
+  </div>
+</div>
+<script>
+{{ form.avatar.id_for_label }}.onchange = evt => {
+  const [file] = {{ form.avatar.id_for_label }}.files
+  if (file) {
+    blah.src = URL.createObjectURL(file)
+  }
+}
+
+</script>
+{% endblock %}

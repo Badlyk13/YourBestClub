@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load news_sidebar %}
+{% block title %}
+{{ post.title }} :: {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h4>{{ post.title }}</h4>
+    </div>
+    <!--    Контент новости-->
+    <div class="row mt-3">
+      <div class="col-md-8">
+        <img class="img-fluid rounded" src="{{ post.photo.url }}"/><br>
+        <br><br>
+        {{ post.content|safe }}
+
+        <p align="right">
+          <a class='mylinks' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
+        </p>
+        <hr>
+        <div class="text-end"><small class="text-muted">
+          <i>{{ post.created_at|date:'m.d.Y H:i' }}&nbsp;&nbsp;&nbsp;
+            <i class="bi bi-eye"></i> {{ post.views }}</i></small>
+        </div>
+      </div>
+      <!--    Конец Контент новости  -->
+      <!--    Список новостей   -->
+
+      {% get_news %}
+    </div>
+    <!--    Конец Список новостей   -->
+  </div>
+
+</div>
+
+{% endblock %}
