@@ -5,8 +5,7 @@ from django.contrib.auth.models import User
 from .models import *
 
 
-def clean_unique(form, field, exclude_initial=True,
-                 format="Пользователь с таким номером телефона уже существует"):
+def clean_unique(form, field, exclude_initial=True, format="Пользователь с таким номером телефона уже существует"):
     value = form.cleaned_data.get(field)
     if value:
         qs = form._meta.model._default_manager.filter(**{field:value})
@@ -59,3 +58,8 @@ class StudentForm(forms.ModelForm):
     def clean_phone(self):
         return clean_unique(self, 'agent_phone')
 
+
+class CreateClubForm(forms.ModelForm):
+    class Meta:
+        model = Club
+        fields = ['city', 'address', 'title', 'description', 'avatar']

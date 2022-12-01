@@ -1,6 +1,8 @@
-from django.contrib.auth.models import User
+import secrets
+import string
 
-from director.models import Director, Trainer, Student
+from django.contrib.auth.models import User
+from director.models import Director, Trainer, Student, ClubGroup
 
 
 def finding_user(user):
@@ -51,3 +53,11 @@ def not_student_check(user):
         return False
     except:
         return True
+
+
+def generate_alphanum_crypt_string(length):
+    letters_and_digits = string.ascii_letters + string.digits
+    crypt_rand_string = ''.join(secrets.choice(letters_and_digits) for i in range(length))
+    return crypt_rand_string
+
+

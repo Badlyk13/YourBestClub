@@ -12,9 +12,14 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL), name='logout'),
     path('choice-type/', choice_type, name='choice_type'),
     path('register/<slug:user_type>/', register, name='register'),
-    path('change_password/', change_password, name='change_password'),
-    path('set_password/<int:user_type>/<int:pk>/', set_password, name='set_password'),
+    path('change_password/<slug:user_type>/<int:pk>/', change_password, name='change_password'),
+    path('set_password/<slug:user_type>/<int:pk>/', set_password, name='set_password'),
 
+    path('club/add-club/', club_add, name='club_add'),
+    path('club/<int:pk>/detail/', club_detail, name='club_detail'),
+    path('club/<int:pk>/edit/', club_edit, name='club_edit'),
+    path('club/<int:pk>/delete/', club_delete, name='club_delete'),
+    path('club/<int:pk>/delete-confirm/', club_delete_confirm, name='club_delete_confirm'),
 
     path('add-details/<slug:user_type>', add_details, name='add_details'),
     path('<slug:user_type>/<int:pk>/detail', detail, name='detail'),

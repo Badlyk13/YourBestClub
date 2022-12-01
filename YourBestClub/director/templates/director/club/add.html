@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+        <h3>{{ title }}</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-8 ps-4">
+      <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <p>
+          <label for="{{ form.city.id_for_label }}">{{ form.city.label_tag }}</label>
+          <input type="text" name="city" class="form-control" value="{{ club.city }}" maxlength="150" required id="{{ form.city.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.address.id_for_label }}">{{ form.address.label_tag }}</label>
+          <input type="text" name="address" class="form-control" value="{{ club.address }}" maxlength="150" required id="{{ form.address.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.title.id_for_label }}">{{ form.title.label_tag }}</label>
+          <input type="text" name="title" class="form-control" value="{{ club.title }}" maxlength="150" required id="{{ form.title.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.description.id_for_label }}">{{ form.description.label_tag }}</label>
+          <input type="text" name="description" class="form-control" value="{{ club.description }}" maxlength="300" required id="{{ form.description.id_for_label }}">
+        </p>
+        <p>
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              <label for="blah">{{ form.avatar.label_tag }}    </label>
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              {% if club.avatar.url == '/no-image.png' %}
+              <img id='blah' class="avatar thumbnail" alt="{{ form.surname.value }}" src="/media/no-image.png"/>
+              {% else %}
+              <img id='blah' class="avatar thumbnail" alt="{{ form.surname.value }}" src="{{ club.avatar.url }}"/>
+              {% endif %}
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 5px; margin-right: 0px;">
+              <input class="image" type="file" name="avatar" src="media/no-image.png" accept="image/*" id="id_avatar">
+            </li>
+          </ul>
+        </p>
+        <div class="row">
+        {% if club %}
+          <div class="col-6 text-start">
+            <a href="{% url 'club_delete' club.pk %}">
+              <button class="delete-button" type="button">Удалить</button>
+            </a>
+          </div>
+          {% endif %}
+          <div class="col-6 text-end">
+            <button class="save-button" type="submit">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    </div>
+
+    <div class="col-3"></div>
+</div>
+    <script>
+    {{ form.avatar.id_for_label }}.onchange = evt => {
+      const [file] = {{ form.avatar.id_for_label }}.files
+      if (file) {
+        blah.src = URL.createObjectURL(file)
+      }
+    }
+    </script>
+{% endblock %}

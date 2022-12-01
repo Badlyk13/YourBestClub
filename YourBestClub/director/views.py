@@ -6,7 +6,7 @@ from django.contrib import messages
 
 from YourBestClub.settings import TELEGRAM_BOT_URI
 from YourBestClub.utils import finding_user
-from director.forms import UserLoginForm, UserCreateForm, DirectorForm, TrainerForm, StudentForm
+from director.forms import UserLoginForm, UserCreateForm, DirectorForm, TrainerForm, StudentForm, CreateClubForm
 from director.models import Director, Trainer, Student, ClubGroup, Club
 
 
@@ -164,20 +164,21 @@ def delete_confirm(request, user_type, pk):
 
 
 @login_required
-def change_password(request):
+def change_password(request, user_type, pk):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
+            user_data, user_type = finding_user(user)
             messages.success(request, 'Пароль обновлен!')
-            return redirect('office')
+            return redirect('detail', user_type=user_type, pk=user_data.pk)
         else:
             for field in form.errors:
                 messages.error(request, form.errors[field].as_text())
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'director/registration/change_password.html', {'title': 'Изменение пароля', 'form': form, })
+    return render(request, 'director/registration/change_password.html', {'title': 'Изменение пароля', 'form': form})
 
 
 @login_required
@@ -186,9 +187,85 @@ def set_password(request):
         form = SetPasswordForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            return redirect('office')
+            user_data, user_type = finding_user(user)
+            messages.success(request, 'Пароль установлен!')
+            return redirect('detail', user_type=user_type, pk=user_data.pk)
     else:
         form = SetPasswordForm(request.user)
         return render(request, 'director/registration/set_password.html', {'title': 'Создание пароля', 'form': form})
 
 
+# ===================================== CLUB =================================
+
+@login_required
+def club_add(request):
+    if request.method == 'POST':
+        form = CreateClubForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save(commit=False)
+            form.instance.director = request.user.director
+            club = form.save()
+            messages.success(request, 'Клуб добавлен!')
+            return redirect('detail', user_type='director', pk=request.user.director.pk)
+        else:
+            for field in form.errors:
+                error = form.errors[field].as_text()
+                messages.error(request, error)
+    else:
+        form = CreateClubForm()
+    return render(request, 'director/club/add.html',
+                  {'title': 'Добавление клуба', 'form': form, 'director': request.user.director})
+
+
+@login_required
+def club_detail(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        return render(request, 'director/club/detail.html',
+                      {'title': f'{club.title}', 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def club_edit(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        if request.method == 'POST':
+            form = CreateClubForm(request.POST, request.FILES, instance=club)
+            if form.is_valid():
+                form.save(commit=False)
+                form.instance.director = request.user.director
+                club = form.save()
+                messages.success(request, 'Изменения внесены!')
+                return redirect('detail', user_type='director', pk=club.director.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error)
+        else:
+            form = CreateClubForm(instance=club)
+        return render(request, 'director/club/add.html',
+                      {'title': 'Редактирование клуба', 'form': form, 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def club_delete(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        return render(request, f'director/club/delete.html',
+                      {'title': 'Удаление клуба', 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def club_delete_confirm(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        club.delete()
+        return redirect('detail', user_type='director', pk=club.director.pk)
+    else:
+        return redirect('403Forbidden')

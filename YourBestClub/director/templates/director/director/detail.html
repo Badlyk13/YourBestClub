@@ -16,7 +16,7 @@
 </div>
 <div class="row">
     <div class="col-12 mt-1 mb-3">
-        <h5> <a class="black" href="{}"><i class="bi bi-plus-square"></i> Добавить клуб</a></h5>
+        <h5> <a class="black" href="{% url 'club_add' %}"><i class="bi bi-plus-square"></i> Добавить клуб</a></h5>
     </div>
 </div>
 <div class="row">
@@ -24,7 +24,7 @@
   <div class="col-6 col-md-2 p-3">
     <div class="row gx-3">
       <div class="col-6 col-md-12 text-center p-0">
-        <a class="image" href="{}">
+        <a class="image" href="{% url 'club_detail' club.pk %}">
           <div class="card bg-dark text-white">
             <img class="img-fluid rounded" alt="{{ club }}" src="{{ club.avatar.url }}"/>
           </div>

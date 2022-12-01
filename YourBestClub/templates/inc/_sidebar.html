@@ -24,14 +24,14 @@
     <div class="card bg-dark text-white">
       <img class="img-fluid rounded" alt="{{ club }}" src="{{ club.avatar.url }}"/>
       <div class="card-img-overlay text-end" style="padding: 0.2em;padding-right: 0.5em;font-size: 1.5em;">
-        <a class="black" href="{% url 'edit_club' club.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
+        <a class="black" href="{% url 'club_edit' club.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
       </div>
     </div>
   </div>
 
   <div class="col-6 col-md-12 text-center">
     <div class="row">
-      <div class="col-12 text-center pt-3"><a href="{% url 'detail_club' club.pk %}"><h3>{{ club }}</h3></a></div>
+      <div class="col-12 text-center pt-3"><a href="{% url 'club_detail' club.pk %}"><h3>{{ club }}</h3></a></div>
       {% if not group %}
       <div class="col-12 text-center pt-1"><i><small> {{ club.description }}</small></i></div>
       {% else %}
