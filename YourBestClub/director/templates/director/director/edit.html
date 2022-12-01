@@ -12,7 +12,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-12 col-md-8 ps-4">
+  <div class="col-12 col-md-8 ps-4 pe-4">
     <form method="post" enctype="multipart/form-data">  {% csrf_token %}
       <div class="form-group">
         <p>
@@ -44,9 +44,19 @@
             </li>
           </ul>
         </p>
-        <p align="right">
-          <button class="save-button" type="submit">Сохранить</button>
+        <p>
+          <a href="{% url 'change_password' %}" class="black">Сменить пароль</a>
         </p>
+        <div class="row">
+          <div class="col-6 text-start">
+            <a href="{% url 'delete' 'director' director.pk %}">
+              <button class="delete-button" type="button">Удалить</button>
+            </a>
+          </div>
+          <div class="col-6 text-end">
+            <button class="save-button" type="submit">Сохранить</button>
+          </div>
+        </div>
       </div>
     </form>
   </div>

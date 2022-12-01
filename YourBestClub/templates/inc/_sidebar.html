@@ -5,7 +5,7 @@
     <div class="card bg-dark text-white">
       <img class="img-fluid rounded" alt="{{ director }}" src="{{ director.avatar.url }}"/>
       <div class="card-img-overlay text-end" style="padding: 0.2em;padding-right: 0.5em;font-size: 1.5em;">
-        <a class="mylinks" href="{% url 'user_edit' director.user.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
+        <a href="{% url 'edit_details' 'director' director.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
       </div>
     </div>
   </div>

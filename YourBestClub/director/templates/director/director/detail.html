@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+{% if director.tgID %}
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+        <h2>Мои клубы</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mt-1 mb-3">
+        <h5> <a class="black" href="{}"><i class="bi bi-plus-square"></i> Добавить клуб</a></h5>
+    </div>
+</div>
+<div class="row">
+  {% for club in director.club_set.all %}
+  <div class="col-6 col-md-2 p-3">
+    <div class="row gx-3">
+      <div class="col-6 col-md-12 text-center p-0">
+        <a class="image" href="{}">
+          <div class="card bg-dark text-white">
+            <img class="img-fluid rounded" alt="{{ club }}" src="{{ club.avatar.url }}"/>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-12 text-center" style="word-wrap: break-word">
+        <small style="font-family: Oswald;">{{ club }}</small>
+      </div>
+    </div>
+  </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+        <h2>Шаг 3. Телеграм.</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mt-1 mb-3 text-center">
+    <p> Сейчас необходимо перейти в Telegram.</p>
+    <p>Перейдите по ссылке и завершите регистрацию. Это ВАЖНЫЙ ШАГ!</p>
+    <p>После перехода откроется телеграм-бот, нажмите кнопку — "Запустить"</p>
+    <H5>
+      <a class="black" href="{{ link }}">Перейти в Телеграм</a>
+    </H5>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

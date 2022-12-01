@@ -4,22 +4,44 @@
     <div class="menu">
       <ul class="hr">
         <li><a class="img-nav" href="/"><img class="nav-img" src="{% static '/logo2.png' %}" alt="" width="64" height="64"></a></li>
-        <li><a class="revers" href="{}">Кабинет</a></li>
-        <li><a class="revers" href="{}">Расписание</a></li>
-        {% if user.trainer %}
-        <li><a class="revers" href="{% url 'trainers_statistic' user.trainer.club.pk user.trainer.pk %}">Статистика</a></li>
-        {% elif user.director %}
-        <li><a class="revers" href="{}">Статистика</a></li>
+        {% if user.director %}
+          {% if user.director.tgID %}
+            <li><a class="revers {{ d }}" href="{% url 'detail' 'director' user.director.pk %}">Кабинет</a></li>
+            <li><a class="revers" href="{}">Расписание</a></li>
+            <li><a class="revers" href="{}">Статистика</a></li>
+            <li><a class="revers" href="{}">Новости</a></li>
+            <li><a class="revers" href="{}">Финансы</a></li>
+          {% else %}
+            <li><a class="revers disabled" href="#">Кабинет</a></li>
+            <li><a class="revers disabled" href="#">Расписание</a></li>
+            <li><a class="revers disabled" href="#">Статистика</a></li>
+            <li><a class="revers disabled" href="#">Новости</a></li>
+            <li><a class="revers disabled" href="#">Финансы</a></li>
+          {% endif %}
         {% endif %}
 
+        {% if user.trainer %}
+        <li><a class="revers" href="{% url 'detail' 'trainer' user.trainer.pk %}">Кабинет</a></li>
+        <li><a class="revers" href="{}">Расписание</a></li>
+        <li><a class="revers" href="{% url 'trainers_statistic' user.trainer.club.pk user.trainer.pk %}">Статистика</a></li>
         <li><a class="revers" href="{}">Новости</a></li>
         <li><a class="revers" href="{}">Финансы</a></li>
+        {% endif %}
+
+        {% if user.student %}
+        <li><a class="revers" href="{% url 'detail' 'student' user.student.pk %}">Кабинет</a></li>
+        <li><a class="revers" href="{}">Расписание</a></li>
+        <li><a class="revers" href="{% url 'trainers_statistic' user.trainer.club.pk user.trainer.pk %}">Статистика</a></li>
+        <li><a class="revers" href="{}">Новости</a></li>
+        <li><a class="revers" href="{}">Финансы</a></li>
+        {% endif %}
         <li>
         {% if request.user.is_authenticated %}
         <a class="revers" href="{% url 'logout' %}"><i class="bi bi-box-arrow-left"></i> Выйти</a>
         {% else %}
         <a class="revers" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Войти</a>
         {% endif %}
+        </li>
       </ul>
     </div>
   </div>

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+<p>Вы уверены, что хотите удалить "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}"?</p>
+<a href="{% url 'delete_confirm' user_type user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+<a class='black' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
+
+{% endblock %}
