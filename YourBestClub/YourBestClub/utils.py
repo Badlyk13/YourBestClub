@@ -1,5 +1,6 @@
 import secrets
 import string
+import random
 
 from django.contrib.auth.models import User
 from director.models import Director, Trainer, Student, ClubGroup
@@ -61,3 +62,8 @@ def generate_alphanum_crypt_string(length):
     return crypt_rand_string
 
 
+def create_password():
+    length = 24
+    allowed_chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+    password = ''.join(random.sample(allowed_chars, length))
+    return password

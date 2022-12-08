@@ -4,12 +4,15 @@ from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
+from django.utils.datastructures import MultiValueDictKeyError
 
 from YourBestClub.settings import TELEGRAM_BOT_URI
-from YourBestClub.utils import finding_user
+from YourBestClub.utils import finding_user, create_password
 from director.forms import UserLoginForm, UserCreateForm, DirectorForm, TrainerForm, StudentForm, CreateClubForm, \
-    CreateGroupForm, CreateSubscriptionForm, CreateLessonForm, CreateIndividualLessonForm
+    CreateGroupForm, CreateSubscriptionForm, CreateLessonForm, CreateIndividualLessonForm, ClubMailingForm, \
+    PersonalMailingForm
 from director.models import Director, Trainer, Student, ClubGroup, Club, ClubSubscription, Lesson, Participant
+from PIL import Image
 
 
 # Create your views here.
@@ -169,7 +172,6 @@ def set_password(request):
 
 
 # ===================================== CLUB =================================
-
 @login_required
 def club_add(request):
     if request.method == 'POST':
@@ -812,3 +814,77 @@ def change_status_false(request, pk, pk_lesson, pk_participant):
         return redirect(students_in_lesson, pk=pk, pk_lesson=pk_lesson)
     else:
         return redirect('403Forbidden')
+
+
+# -------------------------------------- РАССЫЛКА  -----------------------------
+def club_mailing(request, pk):
+    if request.method == 'POST':
+        form = ClubMailingForm(request.POST, request.FILES)
+        if form.is_valid():
+            mes_data = form.cleaned_data
+            try:
+                img = Image.open(request.FILES['image'])
+                img_path = f'media/uploads/broadcast/{create_password()}.{img.format}'
+                img.save(img_path)
+                mes_data['image'] = img_path
+            except MultiValueDictKeyError:
+                pass
+
+            club_pk = Club.objects.get(pk=pk).pk
+            recipients = [i.tgID for i in Trainer.objects.filter(club_id=club_pk) if i.tgID is not None]
+            recipients += [i.tgID for i in Student.objects.filter(club_id=club_pk) if i.tgID is not None]
+            # broadcast(recipients, mes_data)
+            messages.success(request, 'Успешно отправлено!')
+            return render(request, 'director/club/mailing/club_mailing.html', {'club': Club.objects.get(pk=pk), 'form': form})
+        else:
+            for field in form.errors:
+                error = form.errors[field].as_text()
+                messages.error(request, error)
+    else:
+        form = ClubMailingForm()
+        return render(request, 'director/club/mailing/club_mailing.html', {'title': 'Рассылка', 'club': Club.objects.get(pk=pk), 'form': form})
+
+
+@login_required(login_url='/login/')
+def personal_mailing(request, rec_type, pk_rec):
+    user_data, user_type = finding_user(request.user)
+
+    recipient, rec_type_str = '', ''
+    if rec_type == 1:
+        recipient = Director.objects.get(pk=pk_rec)
+        rec_type_str = 'директор'
+    if rec_type == 2:
+        recipient = Trainer.objects.get(pk=pk_rec)
+        rec_type_str = 'преподаватель'
+    if rec_type == 3:
+        recipient = Student.objects.get(pk=pk_rec)
+        rec_type_str = 'ученик'
+
+    if request.method == 'POST':
+        if user_type == 'director':
+            user_type = 'директор'
+        if user_type == 'trainer':
+            user_type = 'тренер'
+        if user_type == 'student':
+            user_type = 'ученик'
+        form = PersonalMailingForm(request.POST, request.FILES)
+        if form.is_valid():
+            mes_data = form.cleaned_data
+            try:
+                img = Image.open(request.FILES['image'])
+                img_path = f'media/uploads/broadcast/{create_password()}.{img.format}'
+                img.save(img_path)
+                mes_data['image'] = img_path
+            except MultiValueDictKeyError:
+                pass
+            # broadcast([recipient.tgID, ], mes_data)
+            messages.success(request, 'Успешно отправлено!')
+            return render(request, 'director/club/mailing/personal_mailing.html',
+                          {'title': 'Личное сообщение', 'form': form, 'recipient': recipient, 'rec_type': rec_type_str})
+    else:
+        form = PersonalMailingForm()
+        return render(request, 'director/club/mailing/personal_mailing.html',
+                      {'title': 'Личное сообщение', 'form': form, 'recipient': recipient, 'rec_type': rec_type_str, f'{user_type}': user_data})
+
+
+

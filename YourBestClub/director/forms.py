@@ -88,3 +88,21 @@ class CreateIndividualLessonForm(forms.Form):
     dt = forms.DateTimeField(label='Дата, время', localize=True)
     student = forms.ModelMultipleChoiceField(queryset=Student.objects.all(), label='Ученик(и)')
     trainer = forms.ModelMultipleChoiceField(queryset=Trainer.objects.all(), label='Тренер')
+
+
+class ClubMailingForm(forms.Form):
+    CHOICES = (
+        ('ALL', 'Всем'),
+        ('TR', 'Тренера'),
+        ('ST', 'Ученики'),
+    )
+    recipient = forms.ChoiceField(choices=CHOICES, label='Получатели')
+    subject = forms.CharField(max_length=50, label='Тема')
+    text = forms.CharField(max_length=1000, label='Текст')
+    image = forms.ImageField(label='Изображение', required=False)
+
+
+class PersonalMailingForm(forms.Form):
+    subject = forms.CharField(max_length=50, label='Тема')
+    text = forms.CharField(max_length=1000, label='Текст')
+    image = forms.ImageField(label='Изображение', required=False)

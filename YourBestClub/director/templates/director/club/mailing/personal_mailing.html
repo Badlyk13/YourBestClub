@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-12">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        Получатель: {{ recipient }} ({{ rec_type }})
+        <p>
+          <label class="second" for="{{ form.subject.id_for_label }}">{{ form.subject.label_tag }}</label>
+          <input type="text" name="subject" class="form-control" placeholder='Максимум 50 символов...' maxlength="50" required id="{{ form.subject.id_for_label }}">
+        </p>
+        <p>
+          <label class="second" for="{{ form.text.id_for_label }}">{{ form.text.label_tag }}</label>
+          <textarea class="form-control" name="text" id="{{ form.text.id_for_label }}" placeholder='Максимум 1000 символов... Допустимо использование эмодзи и оформление текста: <b>жирный</b>, <i>курсив</i>, <s>зачеркнутый</s>, <u>подчеркнутый</u>.' required maxlength="1000" rows="9"></textarea>
+        </p>
+        <p>
+          <label class="second" for="id_image">Добавить изображение: </label>
+          <input class="second" type="file" name="image" accept="image/*" id="id_image">
+          <br><br>
+          <label class="second" for="id_image"></label>
+          <img id='blah' class="img-fluid rounded mysize-small"/>
+        </p>
+
+        <!--     Кнопки сохранить/удалить  -->
+        <div class="row">
+          <div class="col-12 text-end">
+            <button class="save-button" type="submit">Отправить</button>
+          </div>
+        </div>
+        <!--     Конец Кнопки сохранить/удалить  -->
+
+      </div>
+    </form>
+
+
+    <!--     Конец 4 строчка кнопок  -->
+
+    <div class="row">
+      <div class="col-12 text-end">
+        <p class="card-text d-block d-sm-none text-end">
+          <a class='mylinks' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+      <script>
+      id_image.onchange = evt => {
+        const [file] = id_image.files
+        if (file) {
+          blah.src = URL.createObjectURL(file)
+        }
+      }
+      </script>
+{% endblock %}

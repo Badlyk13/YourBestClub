@@ -74,5 +74,8 @@ urlpatterns = [
     path('club/<int:pk>/lesson/<pk_lesson>/participant/<int:pk_participant>/change_status_true/',
          change_status_true, name='change_status_true'),
 
+    path('club/<int:pk>/mailing/', club_mailing, name='club_mailing'),
+    path('personal-mailing/<int:rec_type>/<int:pk_rec>/', personal_mailing, name='personal_mailing'),
+
     ]
 
