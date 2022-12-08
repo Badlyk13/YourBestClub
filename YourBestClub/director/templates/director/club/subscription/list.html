@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+        <h2>Абонементы</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mt-1 mb-1">
+        <h5> <a class="black" href="{% url 'subscription_add' club.pk %}"><i class="bi bi-plus-square"></i> Добавить абонемент</a></h5>
+    </div>
+</div>
+<div class="row px-2">
+  <div class="col-12">
+    <div class="row border rounded-1" style="border-color: #c5c5c5!important">
+      <div class="col-5 mt-1">
+        <h6>Название</h6>
+      </div>
+      <div class="col-3 mt-1 text-center">
+        <h6>Кол-во</h6>
+      </div>
+      <div class="col-2 mt-1">
+        <h6>Цена</h6>
+      </div>
+      <div class="col-2 mt-1 text-center">
+        <h6>Удалить</h6>
+      </div>
+    </div>
+    {% for subscription in club.clubsubscription_set.all %}
+    <div class="row border rounded-1" style="border-color: #c5c5c5!important">
+      <div class="col-5 mt-1">
+      <small>{{ subscription.title }}</small>
+      </div>
+      <div class="col-3 mt-1 text-center">
+        <small>{{ subscription.qty_lesson }}</small>
+      </div>
+      <div class="col-2 mt-1">
+        <small>{{ subscription.cost }}₽</small>
+      </div>
+      <div class="col-2 mt-1 text-center">
+        <small><a class="black" href="{% url 'subscription_delete_confirm' club.pk subscription.pk %}"><i class="bi bi-trash3"></i></a></small>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

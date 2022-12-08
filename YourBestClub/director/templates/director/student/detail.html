@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mt-1 mb-1">
+        <h5>Ставки: </h5>
+    </div>
+</div>
+<div class="row">
+  <div class="col-12 p-3">
+    <p>Ежемесячный оклад: {{ trainer.wage }}₽</p>
+    <p>Ставка за групповое занятие: {{ trainer.cost }}₽</p>
+    <p>Ставка за индив. занятие: {{ trainer.cost_individual }}₽</p>
+    <p>Стоимость индив. для ученика: {{ trainer.cost_for_student }}₽</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 p-3">
+  <p>Группы: Список названий групп-ссылки</p>
+  </div>
+</div>
+{% endblock %}

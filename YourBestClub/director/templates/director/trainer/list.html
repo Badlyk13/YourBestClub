@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+        <h2>Тренера</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mt-1 mb-1">
+        <h5> <a class="black" href="{% url 'trainer_add' club.pk %}"><i class="bi bi-plus-square"></i> Добавить тренера</a></h5>
+    </div>
+</div>
+<div class="row">
+  {% for trainer in club.trainer_set.all %}
+  <div class="col-6 col-md-2 p-3">
+    <div class="row gx-3">
+      <div class="col-6 col-md-12 text-center p-0">
+        <a class="image" href="{% url 'trainer_detail' trainer.club.pk trainer.pk %}">
+          <div class="card bg-dark text-white">
+            <img class="img-fluid rounded" alt="{{ trainer }}" src="{{ trainer.avatar.url }}"/>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-12 text-center" style="word-wrap: break-word">
+        <small style="font-family: Oswald;">{{ trainer }}</small>
+      </div>
+    </div>
+  </div>
+    {% endfor %}
+</div>
+{% endblock %}

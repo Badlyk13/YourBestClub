@@ -8,10 +8,10 @@ from .models import *
 def clean_unique(form, field, exclude_initial=True, format="Пользователь с таким номером телефона уже существует"):
     value = form.cleaned_data.get(field)
     if value:
-        qs = form._meta.model._default_manager.filter(**{field:value})
+        qs = form._meta.model._default_manager.filter(**{field: value})
         if exclude_initial and form.initial:
             initial_value = form.initial.get(field)
-            qs = qs.exclude(**{field:initial_value})
+            qs = qs.exclude(**{field: initial_value})
         if qs.count() > 0:
             raise forms.ValidationError(format)
     return value
@@ -44,7 +44,7 @@ class DirectorForm(forms.ModelForm):
 class TrainerForm(forms.ModelForm):
     class Meta:
         model = Trainer
-        fields = ['surname', 'name', 'soname', 'phone', 'avatar']
+        fields = ['surname', 'name', 'soname', 'phone', 'avatar', 'cost', 'cost_for_student', 'cost_individual', 'wage']
 
     def clean_phone(self):
         return clean_unique(self, 'phone')
@@ -53,7 +53,7 @@ class TrainerForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['surname', 'name', 'soname', 'avatar', 'birthday', 'agent_name', 'agent_phone']
+        fields = ['surname', 'name', 'soname', 'avatar', 'birthday', 'agent_name', 'agent_phone', 'group']
 
     def clean_phone(self):
         return clean_unique(self, 'agent_phone')
@@ -63,3 +63,28 @@ class CreateClubForm(forms.ModelForm):
     class Meta:
         model = Club
         fields = ['city', 'address', 'title', 'description', 'avatar']
+
+
+class CreateSubscriptionForm(forms.ModelForm):
+    class Meta:
+        model = ClubSubscription
+        fields = ['title', 'qty_lesson', 'cost']
+
+
+class CreateGroupForm(forms.ModelForm):
+    class Meta:
+        model = ClubGroup
+        fields = ['title', 'description', 'lesson_price', 'notification', 'subscription', 'avatar']
+
+
+class CreateLessonForm(forms.Form):
+    dt = forms.DateTimeField(label='Дата, время', localize=True)
+    group = forms.ModelChoiceField(queryset=ClubGroup.objects.all(), label='Группа', blank=True)
+    trainer = forms.ModelMultipleChoiceField(queryset=Trainer.objects.all(), label='Тренер')
+    qty_weeks = forms.IntegerField(label='Количество недель')
+
+
+class CreateIndividualLessonForm(forms.Form):
+    dt = forms.DateTimeField(label='Дата, время', localize=True)
+    student = forms.ModelMultipleChoiceField(queryset=Student.objects.all(), label='Ученик(и)')
+    trainer = forms.ModelMultipleChoiceField(queryset=Trainer.objects.all(), label='Тренер')

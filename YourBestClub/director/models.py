@@ -95,6 +95,9 @@ class ClubSubscription(models.Model):
     qty_lesson = models.IntegerField(verbose_name='Количество занятий')
     cost = models.IntegerField(verbose_name='Стоимость')
 
+    def __str__(self):
+        return f'{self.title}'
+
     class Meta:
         verbose_name = 'Абонемент'
         verbose_name_plural = 'Абонементы'
@@ -110,6 +113,7 @@ class ClubGroup(models.Model):
     lesson_price = models.IntegerField(verbose_name='Стоимость занятия')
     notification = models.IntegerField(verbose_name='Оповещение', default=180)
     subscription = models.ManyToManyField(ClubSubscription, blank=True, verbose_name='Абонементы')
+    avatar = models.ImageField(upload_to='avatars_group/', verbose_name='Аватар', default='/no-image.png')
     is_active = models.BooleanField(default=True, verbose_name='Активна')
 
     def __str__(self):
@@ -117,6 +121,21 @@ class ClubGroup(models.Model):
 
     def get_absolute_url(self):
         return reverse('group_list', kwargs={'pk': self.club.pk})
+
+    def save(self, *args, **kwargs):
+        super(ClubGroup, self).save(*args, **kwargs)
+        try:
+            filepath = self.avatar.path
+            img = Image.open(filepath)
+            if img.width > img.height:
+                dist = int((img.width - img.height) / 2)
+                cropped = img.crop((dist, 0, img.width - dist, img.height))
+            else:
+                dist = int((img.height - img.width) / 2)
+                cropped = img.crop((0, dist, img.width, img.height - dist))
+            cropped.save(filepath)
+        except:
+            pass
 
     class Meta:
         verbose_name = 'Группа(у)'

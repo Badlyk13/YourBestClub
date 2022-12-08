@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-12 mt-3 mb-3 text-center">
+    <h3>Добавление занятия</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+      <div class="form-group">
+        <p>
+          <label for="{{ form.dt.id_for_label }}">{{ form.dt.label_tag }}</label>
+          <input type="datetime-local" name="dt" class="form-control" maxlength="50" value="{{ current_date|date:'Y-m-d H:i' }}" min="{{ current_date|date:'Y-m-d H:i' }}" id="{{ form.dt.id_for_label }}">
+        </p>
+
+        <p>
+          <label for="{{ form.group.id_for_label }}">{{ form.group.label_tag }}</label>
+          <select class="form-select" name="group" id="{{ form.group.id_for_label }}" required>
+            {% for gr in form.group %}
+                {% if gr.data.label == group.title %}
+                  {% if gr.data.selected %}
+                <option value="{{ gr.data.value }}" selected>{{ gr.data.label }}</option>
+              {% else %}
+                <option value="{{ gr.data.value }}">{{ gr.data.label }}</option>
+                  {% endif %}
+                {% endif %}
+
+            {% endfor %}
+          </select>
+        </p>
+
+        <p>
+          <label for="{{ form.trainer.id_for_label }}">{{ form.trainer.label_tag }}</label>
+          <select class="form-select" multiple name="trainer" id="{{ form.trainer.id_for_label }}" required aria-describedby="trainerHelpBlock">
+            {% for gr in form.trainer %}
+              <option value="{{ gr.data.value }}">{{ gr.data.label }}</option>
+            {% endfor %}
+          </select>
+          <div id="trainerHelpBlock" class="form-text d-none d-sm-block" style="color: #c5c5c5">
+            <i><small>* Для выбора нескольких тренеров используйте CTRL</small></i>
+          </div>
+        </p>
+        <hr>
+        <p>
+          <label for="qty_weeks">Количество недель:</label>
+          <input class="form-control" type="number" id="qty_weeks" name="qty_weeks" value="0" aria-describedby="qty_weeksHelpBlock">
+          <div id="qty_weeksHelpBlock" class="form-text" style="color: #c5c5c5">
+            <i><small>* Для копирования занятия - укажите кол-во недель. Или оставьте 0, если это однократное занятие.
+               Например, если указанная дата выпадает на вторник и вы указали 8 недель, то занятие будет автоматически
+              скопировано 8 вторников вперед.</small></i>
+          </div>
+        </p>
+
+
+      </div>
+      <div class="row">
+        <div class="col-12 text-end">
+          <button class="save-button" type="submit">Сохранить</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load accounts_tags %}
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+{% if group %}
+{% comment %}
+{% get_trainers_list group.pk as trainers %}
+
+<div class="row">
+  {% for trainer in trainers %}
+    <div class="col-12 col-md-3 mt-1">
+      <h5>
+        <a class="revers" href="{% url 'trainer_detail' trainer.club.pk trainer.pk %}">{{ trainer }}</a>
+      </h5>
+    </div>
+  {% endfor %}
+</div>
+{% endcomment %}
+{% endif %}
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+        <h2>Ученики</h2>
+    </div>
+</div>
+<div class="row" xmlns="http://www.w3.org/1999/html">
+    <div class="col-6 mt-3">
+      <h5><a class="black" href="{% url 'student_add' group.club.pk group.pk %}"><i class="bi bi-plus-square"></i> Добавить ученика</a></h5>
+    </div>
+</div>
+<div class="row">
+  {% for student in group.student_set.all %}
+  <div class="col-6 col-md-2 p-3">
+    <div class="row gx-3">
+      <div class="col-6 col-md-12 text-center p-0">
+        <a class="image" href="{% url 'student_detail' student.group.club.pk student.group.pk student.pk %}">
+          <div class="card bg-dark text-white">
+            <img class="img-fluid rounded" alt="{{ student }}" src="{{ student.avatar.url }}"/>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-12 text-center" style="word-wrap: break-word">
+        <small style="font-family: Oswald;">{{ student }}</small>
+      </div>
+    </div>
+  </div>
+    {% endfor %}
+</div>
+
+<script>
+const btn = document.querySelector('.share');
+const resultPara = document.querySelector('.result'),
+      thisUrl = window.location.href,
+      thisTitle = document.title,
+      shareObj = {
+                   title: thisTitle,
+                   url: "{{ link }}",
+                 }
+
+// Must be triggered some kind of "user activation"
+btn.addEventListener('click', async () => {
+  try {
+    await navigator.share(shareObj)
+    resultPara.textContent = ''
+  } catch(err) {
+    resultPara.textContent = 'Error: ' + err
+  }
+});
+
+
+
+</script>
+{% endblock %}

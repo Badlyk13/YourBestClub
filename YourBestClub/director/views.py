@@ -3,11 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.utils import timezone
 
 from YourBestClub.settings import TELEGRAM_BOT_URI
 from YourBestClub.utils import finding_user
-from director.forms import UserLoginForm, UserCreateForm, DirectorForm, TrainerForm, StudentForm, CreateClubForm
-from director.models import Director, Trainer, Student, ClubGroup, Club
+from director.forms import UserLoginForm, UserCreateForm, DirectorForm, TrainerForm, StudentForm, CreateClubForm, \
+    CreateGroupForm, CreateSubscriptionForm, CreateLessonForm, CreateIndividualLessonForm
+from director.models import Director, Trainer, Student, ClubGroup, Club, ClubSubscription, Lesson, Participant
 
 
 # Create your views here.
@@ -72,93 +74,64 @@ def register(request, user_type):
 
 
 @login_required
-def add_details(request, user_type, pk_group=None, pk_club=None):
+def add_details(request):
     form = ''
     if request.method == 'POST':
-        if user_type == 'director':
-            form = DirectorForm(request.POST, request.FILES)
-        if user_type == 'trainer':
-            form = TrainerForm(request.POST, request.FILES)
-        if user_type == 'student':
-            form = StudentForm(request.POST, request.FILES)
+        form = DirectorForm(request.POST, request.FILES)
 
         if form.is_valid():
             form.save(commit=False)
             form.instance.user = request.user
-            if user_type == 'trainer':
-                form.instance.club = Club.objects.get(pk=pk_club)
-            if user_type == 'student':
-                form.instance.group = ClubGroup.objects.get(pk=pk_group)
             reg_user = form.save()
             messages.success(request, 'Шаг 2 успешно пройден! Последний шаг...')
-            return redirect('detail', user_type=user_type, pk=reg_user.pk)
+            return redirect('director_detail', pk=reg_user.pk)
         else:
             for field in form.errors:
                 error = form.errors[field].as_text()
                 messages.error(request, error + ' ' + field)
     else:
-        if user_type == 'director':
-            form = DirectorForm()
-        if user_type == 'trainer':
-            form = TrainerForm()
-        if user_type == 'student':
-            form = StudentForm()
-            form.fields['group'].queryset = ClubGroup.objects.filter(pk=pk_group)
-        return render(request, f'director/{user_type}/add.html',
+        form = DirectorForm()
+        return render(request, f'director/director/add.html',
                       {'title': 'Шаг 2. Личные данные', 'form': form})
 
 
 @login_required
-def edit_details(request, user_type, pk):
-    form, user_data = '', ''
+def director_edit_details(request, pk):
     if request.method == 'POST':
-        if user_type == 'director':
-            form = DirectorForm(request.POST, request.FILES, instance=Director.objects.get(pk=pk))
-        if user_type == 'trainer':
-            form = TrainerForm(request.POST, request.FILES, instance=Trainer.objects.get(pk=pk))
-        if user_type == 'student':
-            form = StudentForm(request.POST, request.FILES, instance=Student.objects.get(pk=pk))
-
+        form = DirectorForm(request.POST, request.FILES, instance=Director.objects.get(pk=pk))
         if form.is_valid():
             form.save()
             messages.success(request, 'Изменения внесены!')
-            return redirect('detail', user_type=user_type, pk=pk)
+            return redirect('detail', pk=pk)
         else:
             for field in form.errors:
                 error = form.errors[field].as_text()
                 messages.error(request, error + ' ' + field)
     else:
-        if user_type == 'director':
-            form = DirectorForm(instance=Director.objects.get(pk=pk))
-            user_data = Director.objects.get(pk=pk)
-        if user_type == 'trainer':
-            form = TrainerForm(instance=Trainer.objects.get(pk=pk))
-            user_data = Trainer.objects.get(pk=pk)
-        if user_type == 'student':
-            form = StudentForm(instance=Student.objects.get(pk=pk))
-            user_data = Student.objects.get(pk=pk)
-        return render(request, f'director/{user_type}/edit.html',
-                      {'title': 'Личные данные', 'form': form, f'{user_type}': user_data})
+        form = DirectorForm(instance=Director.objects.get(pk=pk))
+        director = Director.objects.get(pk=pk)
+        return render(request, f'director/director/edit.html',
+                      {'title': 'Личные данные', 'form': form, 'director': director})
 
 
 @login_required
-def detail(request, user_type, pk):
-    user_data, user_type = finding_user(request.user)
-    link = f"{TELEGRAM_BOT_URI}c{pk}{user_type[0]}"
-    return render(request, f'director/{user_type}/detail.html',
-                  {'title': 'Личный кабинет', f'{user_type}': user_data, 'link': link})
+def director_detail(request, pk):
+    director = Director.objects.get(pk=pk)
+    link = f"{TELEGRAM_BOT_URI}c{pk}d"
+    return render(request, f'director/director/detail.html',
+                  {'title': 'Личный кабинет', 'director': director, 'link': link})
 
 
 @login_required
-def delete(request, user_type, pk):
-    user_data, user_type = finding_user(request.user)
+def director_delete(request, pk):
+    director = Director.objects.get(pk=pk)
     return render(request, f'director/registration/delete.html',
-                  {'title': 'Удаление', 'user_data': user_data, 'user_type': user_type})
+                  {'title': 'Удаление', 'user_data': director, 'user_type': 'director'})
 
 
 @login_required
-def delete_confirm(request, user_type, pk):
-    user = request.user
+def director_delete_confirm(request, pk):
+    user = Director.objects.get(pk=pk)
     user.delete()
     return redirect('login')
 
@@ -267,5 +240,575 @@ def club_delete_confirm(request, pk):
     if request.user.director == club.director:
         club.delete()
         return redirect('detail', user_type='director', pk=club.director.pk)
+    else:
+        return redirect('403Forbidden')
+
+
+# ===================================== Club Subscription =================================
+@login_required
+def subscription_add(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    form = ''
+    if request.user.director == club.director:
+        if request.method == 'POST':
+            form = CreateSubscriptionForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save(commit=False)
+                form.instance.club = club
+                reg_subscription = form.save()
+                messages.success(request, 'Абонемент успешно добавлен!')
+                return redirect('subscription_list', pk=club.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+        else:
+            form = CreateSubscriptionForm()
+            return render(request, f'director/club/subscription/add.html',
+                          {'title': 'Добавление абонемента', 'form': form, 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def subscription_list(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        return render(request, 'director/club/subscription/list.html',
+                      {'title': 'Абонементы', 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def subscription_edit(request, pk, pk_subscription):
+    club = Club.objects.select_related('director').get(pk=pk)
+    form = ''
+    if request.user.director == club.director:
+        subscription = ClubSubscription.objects.get(pk=pk_subscription)
+        if request.method == 'POST':
+            form = CreateSubscriptionForm(request.POST, request.FILES, instance=subscription)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Данные успешно обновлены!')
+                return redirect('subscription_list', pk=club.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+        else:
+            form = CreateSubscriptionForm(instance=subscription)
+            return render(request, f'director/club/subscription/edit.html',
+                          {'title': 'Редактирование абонемента', 'form': form, 'subscription': subscription})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def subscription_delete_confirm(request, pk, pk_subscription):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        subscription = ClubSubscription.objects.get(pk=pk_subscription)
+        subscription.delete()
+        return redirect('subscription_list', pk=club.pk)
+
+
+# ===================================== CLUB GROUP =================================
+@login_required
+def group_add(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    form = ''
+    if request.user.director == club.director:
+        if request.method == 'POST':
+            form = CreateGroupForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save(commit=False)
+                form.instance.club = club
+                reg_group = form.save()
+                messages.success(request, 'Группа успешно добавлена!')
+                return redirect('group_detail', pk=club.pk, pk_group=reg_group.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+        else:
+            form = CreateGroupForm()
+            form.fields['subscription'].queryset = club.clubsubscription_set.all()
+            return render(request, f'director/group/add.html',
+                          {'title': 'Добавление группы', 'form': form, 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def group_list(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        return render(request, 'director/group/list.html',
+                      {'title': 'Группы', 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def group_detail(request, pk, pk_group):
+    club = Club.objects.select_related('director').get(pk=pk)
+    group = ClubGroup.objects.get(pk=pk_group)
+    if request.user.director == club.director:
+        return render(request, 'director/group/detail.html',
+                      {'title': group.title, 'group': group})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def group_edit(request, pk, pk_group):
+    club = Club.objects.select_related('director').get(pk=pk)
+    form = ''
+    if request.user.director == club.director:
+        group = ClubGroup.objects.get(pk=pk_group)
+        if request.method == 'POST':
+            form = CreateGroupForm(request.POST, request.FILES, instance=group)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Данные успешно обновлены!')
+                return redirect('group_detail', pk=club.pk, pk_group=group.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+        else:
+            form = CreateGroupForm(instance=group)
+            # form.fields['subscription'].queryset = club.clubsubscription_set.all()
+            return render(request, f'director/group/edit.html',
+                          {'title': 'Редактирование группы', 'form': form, 'group': group})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def group_delete(request, pk, pk_group):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        group = ClubGroup.objects.get(pk=pk_group)
+        return render(request, f'director/registration/delete.html',
+                      {'title': 'Удаление', 'user_data': group, 'user_type': 'group'})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def group_delete_confirm(request, pk, pk_group):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        group = ClubGroup.objects.get(pk=pk_group)
+        group.delete()
+        return redirect('groups', pk=club.pk)
+
+
+# ===================================== TRAINER =================================
+@login_required
+def trainer_add(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    form = ''
+    if request.user.director == club.director:
+        if request.method == 'POST':
+            form = TrainerForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save(commit=False)
+                form.instance.club = club
+                reg_user = form.save()
+                messages.success(request, 'Тренер успешно добавлен!')
+                return redirect('trainer_detail', pk=club.pk, pk_trainer=reg_user.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+                    form = TrainerForm()
+                    return render(request, f'director/trainer/add.html',
+                                  {'title': 'Добавление тренера', 'form': form, 'club': club})
+        else:
+            form = TrainerForm()
+            return render(request, f'director/trainer/add.html',
+                          {'title': 'Добавление тренера', 'form': form, 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def trainer_list(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        return render(request, 'director/trainer/list.html',
+                      {'title': 'Тренера', 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def trainer_detail(request, pk, pk_trainer):
+    club = Club.objects.select_related('director').get(pk=pk)
+    trainer = Trainer.objects.get(pk=pk_trainer)
+    if request.user.director == club.director:
+        return render(request, 'director/trainer/detail.html',
+                      {'title': trainer, 'trainer': trainer})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def trainer_edit(request, pk, pk_trainer):
+    club = Club.objects.select_related('director').get(pk=pk)
+    form = ''
+    if request.user.director == club.director:
+        trainer = Trainer.objects.get(pk=pk_trainer)
+        if request.method == 'POST':
+            form = TrainerForm(request.POST, request.FILES, instance=trainer)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Данные успешно внесены!')
+                return redirect('trainer_detail', pk=club.pk, pk_trainer=trainer.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+                    form = TrainerForm()
+                    return render(request, f'director/trainer/edit.html',
+                                  {'title': 'Редактирование тренера', 'form': form, 'club': club})
+        else:
+            form = TrainerForm(instance=trainer)
+            return render(request, f'director/trainer/edit.html',
+                          {'title': 'Редактирование тренера', 'form': form, 'trainer': trainer})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def trainer_delete(request, pk, pk_trainer):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        trainer = Trainer.objects.get(pk=pk_trainer)
+        return render(request, f'director/registration/delete.html',
+                      {'title': 'Удаление', 'user_data': trainer, 'user_type': 'trainer'})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def trainer_delete_confirm(request, pk, pk_trainer):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        user = Trainer.objects.get(pk=pk_trainer)
+        user.delete()
+        return redirect('trainers', pk=club.pk)
+
+
+# ===================================== STUDENT =================================
+@login_required
+def student_add(request, pk, pk_group):
+    club = Club.objects.select_related('director').get(pk=pk)
+    group = ClubGroup.objects.get(pk=pk_group)
+    form = ''
+    if request.user.director == club.director:
+        if request.method == 'POST':
+            form = StudentForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save(commit=False)
+                form.instance.group = group
+                reg_user = form.save()
+                messages.success(request, 'Ученик успешно добавлен!')
+                return redirect('student_detail', pk=club.pk, pk_group=group.pk, pk_student=reg_user.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+                    form = StudentForm()
+                    return render(request, f'director/student/add.html',
+                                  {'title': 'Добавление ученика', 'form': form, 'group': group})
+        else:
+            form = StudentForm()
+            form.fields['group'].queryset = ClubGroup.objects.filter(pk=pk_group)
+            return render(request, f'director/student/add.html',
+                          {'title': 'Добавление ученика', 'form': form, 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def student_list(request, pk, pk_group):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if request.user.director == group.club.director:
+        return render(request, 'director/student/list.html',
+                      {'title': 'Ученики', 'group': group})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def student_detail(request, pk, pk_group, pk_student):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    student = Student.objects.get(pk=pk_student)
+    if request.user.director == group.club.director:
+        return render(request, 'director/student/detail.html',
+                      {'title': student, 'student': student})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def student_edit(request, pk, pk_group, pk_student):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    form = ''
+    if request.user.director == group.club.director:
+        student = Student.objects.get(pk=pk_student)
+        if request.method == 'POST':
+            form = StudentForm(request.POST, request.FILES, instance=student)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Данные успешно изменены!')
+                return redirect('student_detail', pk=group.club.pk, pk_group=group.pk, pk_student=student.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error + ' ' + field)
+                    form = StudentForm()
+                    return render(request, f'director/student/edit.html',
+                                  {'title': 'Редактирование ученика', 'form': form, 'pk_group': pk_group})
+        else:
+            form = StudentForm(instance=student)
+            form.fields['group'].queryset = ClubGroup.objects.filter(club=group.club)
+            return render(request, f'director/student/edit.html',
+                          {'title': 'Редактирование ученика', 'form': form, 'student': student})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def student_delete(request, pk, pk_group, pk_student):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if request.user.director == group.club.director:
+        student = Student.objects.get(pk=pk_student)
+        return render(request, f'director/registration/delete.html',
+                      {'title': 'Удаление', 'user_data': student, 'user_type': 'student'})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def student_delete_confirm(request, pk, pk_group, pk_student):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if request.user.director == group.club.director:
+        student = Student.objects.get(pk=pk_student)
+        student.delete()
+        return redirect('students', pk=group.club.pk, pk_group=pk_group)
+    else:
+        return redirect('403Forbidden')
+
+    # -------------------------------------- РАСПИСАНИЕ. ДОБАВИТЬ УРОК  -----------------------------
+
+
+@login_required
+def add_lesson(request, pk, pk_group):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if request.user.director == group.club.director:
+        if request.method == 'POST':
+            form = CreateLessonForm(request.POST)
+            if form.is_valid():
+                qty_weeks = form.cleaned_data.get('qty_weeks')
+                if qty_weeks == 0:
+                    lesson = Lesson.objects.create(dt=form.cleaned_data['dt'], is_group=True, group=group)
+                    lesson.trainer.add(*form.cleaned_data['trainer'])
+                else:
+                    for i in range(0, qty_weeks):
+                        dt = form.cleaned_data.get('dt') + timezone.timedelta(days=7*i)
+                        lesson = Lesson.objects.create(dt=dt, is_group=True, group=group)
+                        lesson.trainer.add(*form.cleaned_data['trainer'])
+                messages.success(request, 'Занятие добавлено!')
+                return redirect('group_schedule', pk=pk, pk_group=pk_group)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error)
+        else:
+            form = CreateLessonForm()
+            form.fields['trainer'].queryset = Trainer.objects.filter(club=group.club)
+        return render(request, 'director/club/schedule/add_lesson.html',
+                      {'form': form, 'group': group, 'current_date': timezone.datetime.now()})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def delete_lesson(request, pk, pk_group, pk_lesson):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if request.user.director == group.club.director:
+        lesson = get_object_or_404(Lesson, pk=pk_lesson)
+        return render(request, 'director/club/schedule/delete_lesson.html', {'title': 'Удаление занятия', 'lesson': lesson, 'group': group})
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def confirm_delete_lesson(request, pk, pk_group, pk_lesson):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if request.user.director == group.club.director:
+        lesson = get_object_or_404(Lesson, pk=pk_lesson)
+        lesson.delete()
+        participants = Participant.objects.filter(lesson=pk_lesson)
+        participants.delete()
+        groups = ClubGroup.objects.filter(pk=pk_group)
+        lessons_group = Lesson.objects.filter(group__in=ClubGroup.objects.filter(club=group.club), is_group=True)
+        individuals_participants = Participant.objects.filter(
+            student__in=Student.objects.filter(group__in=ClubGroup.objects.filter(club=group.club)))
+
+        return redirect('group_schedule', pk=group.club.pk, pk_group=pk_group)
+    else:
+        return redirect('403Forbidden')
+
+
+# -------------------------------------- РАСПИСАНИЕ. ДОБАВИТЬ ИНДИВ  -----------------------------
+@login_required
+def add_indiv_lesson(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    pk_group = ''
+    tr_set = []
+    if request.user.director == club.director:
+        if request.method == 'POST':
+            form = CreateIndividualLessonForm(request.POST)
+            if form.is_valid():
+                trainer = form.cleaned_data['trainer']
+                lesson = Lesson.objects.create(dt=form.cleaned_data['dt'], is_group=False)
+                lesson.trainer.add(*trainer)
+                lesson.save()
+                for student in form.cleaned_data['student']:
+                    participant = Participant.objects.create(lesson=lesson, student=student)
+                    pk_group = participant.student.group.pk
+                messages.success(request, 'Занятие добавлено!')
+                return redirect('group_schedule', pk=pk, pk_group=pk_group)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error)
+        else:
+            students = Student.objects.filter(group__in=ClubGroup.objects.filter(club=pk))
+            form = CreateIndividualLessonForm()
+            form.fields['student'].queryset = Student.objects.filter(group__in=ClubGroup.objects.filter(club=club))
+            form.fields['trainer'].queryset = Trainer.objects.filter(club=club)
+
+        return render(request, 'clubs/schedule/add_indiv.html',
+                      {'form': form, 'club': club, 'current_date': timezone.datetime.now()})
+    else:
+        return redirect('403Forbidden')
+
+
+# -------------------------------------- РАСПИСАНИЕ КЛУБ(ОВ) -----------------------------
+@login_required
+def club_schedule(request, pk):
+    if pk > 0:
+        clubs = Club.objects.filter(pk=pk)
+        groups = ClubGroup.objects.filter(club__in=clubs)
+        lessons_group = Lesson.objects.filter(group__in=ClubGroup.objects.filter(club=clubs[0]), is_group=True)
+        lessons_individuals = Lesson.objects.filter(is_group=False)
+        filtered_lessons_individuals = []
+        for lesson in lessons_individuals:
+            for participant in lesson.participant_set.all():
+                print(participant)
+                if participant.student.group in groups:
+                    if lesson not in filtered_lessons_individuals:
+                        filtered_lessons_individuals.append(lesson)
+
+        return render(request, 'director/club/schedule/club_schedule.html',
+                      {'title': 'Расписание', 'groups': groups, 'lessons_group': lessons_group,
+                       'filtered_lessons_individuals': filtered_lessons_individuals, 'clubs': clubs, 'club': clubs[0]})
+    else:
+        clubs = Club.objects.filter(director=request.user.director)
+        groups = ClubGroup.objects.filter(club__in=clubs)
+        lessons_group = Lesson.objects.filter(group__in=ClubGroup.objects.filter(club__in=clubs), is_group=True)
+        lessons_individuals = Lesson.objects.filter(is_group=False)
+        filtered_lessons_individuals = []
+        for lesson in lessons_individuals:
+            for participant in lesson.participant_set.all():
+                print(participant)
+                if participant.student.group in groups:
+                    if lesson not in filtered_lessons_individuals:
+                        filtered_lessons_individuals.append(lesson)
+
+        return render(request, 'director/club/schedule/club_schedule.html',
+                      {'title': 'Расписание', 'groups': groups, 'lessons_group': lessons_group,
+                       'filtered_lessons_individuals': filtered_lessons_individuals, 'clubs': clubs,
+                       'director': request.user.director})
+
+
+# -------------------------------------- РАСПИСАНИЕ ГРУПП(Ы) -----------------------------
+@login_required
+def group_schedule(request, pk, pk_group):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        if pk_group > 0:
+            groups = ClubGroup.objects.filter(pk=pk_group)
+            lessons_group = Lesson.objects.filter(group__in=ClubGroup.objects.filter(club=club), is_group=True)
+            lessons_individuals = Lesson.objects.filter(is_group=False)
+            filtered_lessons_individuals = []
+            for lesson in lessons_individuals:
+                for participant in lesson.participant_set.all():
+                    if participant.student.group in groups:
+                        if lesson not in filtered_lessons_individuals:
+                            filtered_lessons_individuals.append(lesson)
+
+            return render(request, 'director/club/schedule/group_schedule.html',
+                          {'title': 'Расписание', 'groups': groups, 'lessons_group': lessons_group,
+                           'club': club, 'filtered_lessons_individuals': filtered_lessons_individuals})
+        else:
+            groups = ClubGroup.objects.filter(club=club)
+            lessons_group = Lesson.objects.filter(group__in=ClubGroup.objects.filter(club=club), is_group=True)
+            lessons_individuals = Lesson.objects.filter(is_group=False)
+            filtered_lessons_individuals = []
+            for lesson in lessons_individuals:
+                for participant in lesson.participant_set.all():
+                    if participant.student.group in groups:
+                        if lesson not in filtered_lessons_individuals:
+                            filtered_lessons_individuals.append(lesson)
+
+            return render(request, 'director/club/schedule/club_schedule.html',
+                          {'title': 'Расписание', 'groups': groups, 'lessons_group': lessons_group,
+                           'filtered_lessons_individuals': filtered_lessons_individuals, 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+# -------------------------------------- РАСПИСАНИЕ. СПИСОК УЧАСТНИКОВ УРОКА.  -----------------------------
+@login_required
+def students_in_lesson(request, pk, pk_lesson):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        lesson = get_object_or_404(Lesson, pk=pk_lesson)
+        students = Participant.objects.filter(lesson=pk_lesson)
+        return render(request, 'director/club/schedule/students_list_in_lesson.html',
+                      {'students': students, 'lesson': lesson, 'club': club})
+    else:
+        return redirect('403Forbidden')
+
+
+# -------------------------------------- РАСПИСАНИЕ. СМЕНА СТАТУСА УЧАСТИЯ В УРОКЕ  -----------------------------
+@login_required
+def change_status_true(request, pk, pk_lesson, pk_participant):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        participant = Participant.objects.get(pk=pk_participant)
+        participant.status = True
+        participant.save()
+        return redirect(students_in_lesson, pk=pk, pk_lesson=pk_lesson)
+    else:
+        return redirect('403Forbidden')
+
+
+@login_required
+def change_status_false(request, pk, pk_lesson, pk_participant):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        participant = Participant.objects.get(pk=pk_participant)
+        participant.status = False
+        participant.save()
+        return redirect(students_in_lesson, pk=pk, pk_lesson=pk_lesson)
     else:
         return redirect('403Forbidden')

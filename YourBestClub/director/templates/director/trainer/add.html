@@ -19,19 +19,19 @@
       <div class="form-group">
         <p>
           <label for="{{ form.surname.id_for_label }}">{{ form.surname.label_tag }}</label>
-          <input type="text" name="surname" class="form-control" maxlength="150" required id="{{ form.surname.id_for_label }}">
+          <input type="text" name="surname" value="{{ trainer.surname }}" class="form-control" maxlength="150" required id="{{ form.surname.id_for_label }}">
         </p>
         <p>
           <label for="{{ form.name.id_for_label }}">{{ form.name.label_tag }}</label>
-          <input type="text" name="name" class="form-control" maxlength="150" required id="{{ form.name.id_for_label }}">
+          <input type="text" name="name" value="{{ trainer.name }}" class="form-control" maxlength="150" required id="{{ form.name.id_for_label }}">
         </p>
         <p>
           <label for="{{ form.soname.id_for_label }}">{{ form.soname.label_tag }}</label>
-          <input type="text" name="soname" class="form-control" maxlength="150" id="{{ form.soname.id_for_label }}">
+          <input type="text" name="soname" value="{{ trainer.soname }}" class="form-control" maxlength="150" id="{{ form.soname.id_for_label }}">
         </p>
         <p>
           <label for="{{ form.phone.id_for_label }}">{{ form.phone.label_tag }}</label>
-          <input type="tel" class="form-control" name="phone" pattern='(\+7|7|8)+[0-9]{10}' maxlength="16" required id="{{ form.phone.id_for_label }}" placeholder="+79123456789">
+          <input type="tel" class="form-control" value="{{ trainer.phone }}" name="phone" pattern='(\+7|7|8)+[0-9]{10}' maxlength="16" required id="{{ form.phone.id_for_label }}" placeholder="+79123456789">
         </p>
         <p>
           <ul class="list-inline mb-0">

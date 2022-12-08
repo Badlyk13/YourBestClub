@@ -5,7 +5,7 @@
     <div class="card bg-dark text-white">
       <img class="img-fluid rounded" alt="{{ director }}" src="{{ director.avatar.url }}"/>
       <div class="card-img-overlay text-end" style="padding: 0.2em;padding-right: 0.5em;font-size: 1.5em;">
-        <a href="{% url 'edit_details' 'director' director.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
+        <a href="{% url 'edit_details' director.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
       </div>
     </div>
   </div>
@@ -55,18 +55,14 @@
     <div class="card bg-dark text-white">
       <img class="img-fluid rounded" alt="{{ trainer }}" src="{{ trainer.avatar.url }}"/>
       <div class="card-img-overlay text-end" style="padding: 0.2em;padding-right: 0.5em;font-size: 1.5em;">
-        {% if request.user.trainer %}
-        <a class="" href="{% url 'user_edit' trainer.user.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
-        {% else %}
-        <a class="" href="{% url 'trainer_edit' trainer.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
-        {% endif %}
+        <a class="" href="{% url 'trainer_edit' trainer.club.pk trainer.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
       </div>
     </div>
   </div>
   <div class="col-6 col-md-12 text-center">
     <div class="row">
       <div class="col-12 text-center pt-3"><h3>{{ trainer.surname }} {{ trainer.name }} {{ trainer.soname }}</h3></div>
-      <div class="col-12 text-center pt-3"> <p>{{ trainer.birthday|default_if_none:'ДР не указана' }}</p></div>
+      <div class="col-12 text-center pt-3"> <p><a class='black' href="tel:{{ trainer.phone }}"><i class="bi bi-telephone"></i> {{ trainer.phone }}</a></p></div>
       {% comment %}
       {% get_st_balance student.pk as balance %}
 <!--      Здесь можно получать текущую зарплату-->
@@ -82,16 +78,48 @@
     <div class="card bg-dark text-white">
       <img class="img-fluid rounded" alt="{{ student }}" src="{{ student.avatar.url }}"/>
       <div class="card-img-overlay text-end" style="padding: 0.2em;padding-right: 0.5em;font-size: 1.5em;">
-        <a class="mylinks" href="{% url 'student_edit' student.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
+        <a class="mylinks" href="{% url 'student_edit' student.group.club.pk student.group.pk student.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
       </div>
     </div>
   </div>
   <div class="col-6 col-md-12 text-center">
     <div class="row">
       <div class="col-12 text-center pt-3"><h3>{{ student.surname }} {{ student.name }} {{ student.soname }}</h3></div>
+      <div class="col-12 text-center pt-3"> <p><a class='black' href="tel:{{ student.agent_phone }}"><i class="bi bi-telephone"></i> {{ student.agent_phone }}</a></p></div>
+
       {% comment %}
       {% get_st_balance student.pk as balance %}
       <div class="col-12 text-center pt-3"><h5> Баланс: {{ balance|default_if_none:"0" }}₽</h5></div>
+                  {% endcomment %}
+    </div>
+  </div>
+  {% endif %}
+
+
+  {% if group %}
+  <div class="col-6 col-md-12 text-center">
+    <div class="card bg-dark text-white">
+      <img class="img-fluid rounded" alt="{{ group.title }}" src="{{ group.avatar.url }}"/>
+      <div class="card-img-overlay text-end" style="padding: 0.2em;padding-right: 0.5em;font-size: 1.5em;">
+        <a href="{% url 'group_edit' group.club.pk group.pk %}"><i class="bi bi-pencil-square" style="color: #c93c11"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-12 text-center">
+    <div class="row">
+      <div class="col-12 text-center pt-3"><h3>{{ group.title }}</h3></div>
+      <div class="col-12 text-center"><i><small> {{ group.description }}</small></i></div>
+
+      <div class="col text-center pt-2">
+        <div class="row">
+          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{}"> Статистика </a>|</small></div>
+          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{% url 'group_schedule' group.club.pk group.pk %}"> Расписание </a>|</small></div>
+        </div>
+      </div>
+      {% comment %}
+      {% get_st_balance student.pk as balance %}
+      <div class="col-12 text-center pt-3"><h5> Баланс: {{ balance|default_if_none:"0" }}₽</h5></div>
+
                   {% endcomment %}
     </div>
   </div>

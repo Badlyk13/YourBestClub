@@ -37,10 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
     'director.apps.DirectorConfig',
     'news.apps.NewsConfig',
-    'services.apps.ServicesConfig'
+    'services.apps.ServicesConfig',
 ]
 
 MIDDLEWARE = [
@@ -150,6 +149,3 @@ TELEGRAM_BOT_API_KEY = '5665176467:AAFHLsuRkdYo9L6UQPSRrhlfH6-x-JykjAA'
 TELEGRAM_BOT_URI = 'https://t.me/YourBestClubBot?start='
 
 BASE_HOST = 'https://yourbestclub.ru'
-
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-

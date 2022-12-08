@@ -65,8 +65,19 @@ class ClubAdmin(admin.ModelAdmin):
 
 @admin.register(ClubGroup)
 class ClubGroupAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description', 'club', 'lesson_price', 'notification', 'is_active')
+    list_display = ('id', 'title', 'description', 'club', 'lesson_price', 'notification', 'get_subscription', 'get_avatar', 'is_active', )
     search_fields = ('id', 'title', 'description', 'club')
+
+    def get_subscription(self, obj):
+        return "\n".join([p.subscription for p in obj.subscription.all()])
+
+    def get_avatar(self, obj):
+        if obj.avatar:
+            return mark_safe(f'<img src="{obj.avatar.url}" width="40">')
+        else:
+            return '-'
+
+    get_avatar.short_description = 'Аватар'
 
 
 @admin.register(Lesson)

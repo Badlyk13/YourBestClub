@@ -54,9 +54,8 @@
           <label for="{{ form.agent_phone.id_for_label }}">{{ form.agent_phone.label_tag }}</label>
           <input type="tel" class="form-control" name="agent_phone" pattern='(\+7|7|8)+[0-9]{10}' maxlength="16" required id="{{ form.agent_phone.id_for_label }}" placeholder="+79123456789">
         </p>
-        <p>
-          <label for="{{ form.group.id_for_label }}">{{ form.group.label_tag }}</label>
-          <select class="form-select"  name="group" id="{{ form.group.id_for_label }}" required>
+                  <label for="group">Группа: </label>
+        <select class="form-select"  name="group" id="group" required>
             {% for gr in form.group %}
               {% if gr.data.selected %}
                 <option value="{{ gr.data.value }}" selected>{{ gr.data.label }}</option>
@@ -65,8 +64,6 @@
               {% endif %}
             {% endfor %}
           </select>
-        </p>
-      {% endif %}
         <p align="right">
           <button class="save-button" type="submit">Сохранить</button>
         </p>

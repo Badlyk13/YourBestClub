@@ -21,10 +21,58 @@ urlpatterns = [
     path('club/<int:pk>/delete/', club_delete, name='club_delete'),
     path('club/<int:pk>/delete-confirm/', club_delete_confirm, name='club_delete_confirm'),
 
-    path('add-details/<slug:user_type>', add_details, name='add_details'),
-    path('<slug:user_type>/<int:pk>/detail', detail, name='detail'),
-    path('<slug:user_type>/<int:pk>/edit_details', edit_details, name='edit_details'),
-    path('<slug:user_type>/<int:pk>/delete/', delete, name='delete'),
-    path('<slug:user_type>/<int:pk>/delete-confirm/', delete_confirm, name='delete_confirm'),
+    path('add-details/director/', add_details, name='add_details'),
+    path('director/<int:pk>/detail', director_detail, name='detail'),
+    path('director/<int:pk>/edit_details', director_edit_details, name='edit_details'),
+    path('director/<int:pk>/delete/', director_delete, name='director_delete'),
+    path('director/<int:pk>/delete-confirm/', director_delete_confirm, name='delete_confirm'),
+
+    path('club/<int:pk>/subscription-add/', subscription_add, name='subscription_add'),
+    path('club/<int:pk>/subscription-list/', subscription_list, name='subscription_list'),
+    path('club/<int:pk>/subscription/<int:pk_subscription>/edit', subscription_edit, name='subscription_edit'),
+    path('club/<int:pk>/subscription/<int:pk_subscription>/delete-confirm/', subscription_delete_confirm,
+         name='subscription_delete_confirm'),
+
+    path('club/<int:pk>/group-add/', group_add, name='group_add'),
+    path('club/<int:pk>/group/<int:pk_group>/detail', group_detail, name='group_detail'),
+    path('club/<int:pk>/group/<int:pk_group>/edit', group_edit, name='group_edit'),
+    path('club/<int:pk>/groups/', group_list, name='groups'),
+    path('club/<int:pk>/group/<int:pk_group>/delete/', group_delete, name='group_delete'),
+    path('club/<int:pk>/group/<int:pk_group>/delete-confirm/', group_delete_confirm,
+         name='group_delete_confirm'),
+
+    path('club/<int:pk>/trainer-add/', trainer_add, name='trainer_add'),
+    path('club/<int:pk>/trainer/<int:pk_trainer>/detail', trainer_detail, name='trainer_detail'),
+    path('club/<int:pk>/trainer/<int:pk_trainer>/edit', trainer_edit, name='trainer_edit'),
+    path('club/<int:pk>/trainers/', trainer_list, name='trainers'),
+    path('club/<int:pk>/trainer/<int:pk_trainer>/delete/', trainer_delete, name='trainer_delete'),
+    path('club/<int:pk>/trainer/<int:pk_trainer>/delete-confirm/', trainer_delete_confirm,
+         name='trainer_delete_confirm'),
+
+    path('club/<int:pk>/group/<int:pk_group>/student-add/', student_add, name='student_add'),
+    path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/detail', student_detail, name='student_detail'),
+    path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/edit', student_edit, name='student_edit'),
+    path('club/<int:pk>/group/<int:pk_group>/students/', student_list, name='students'),
+    path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/delete/', student_delete, name='student_delete'),
+    path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_tstudent>/delete-confirm/', student_delete_confirm,
+         name='student_delete_confirm'),
+
+    path('club/<int:pk>/schedule/', club_schedule, name='club_schedule'),
+    path('club/<int:pk>/group/<int:pk_group>/schedule/', group_schedule, name='group_schedule'),
+
+    path('club/<int:pk>/group/<int:pk_group>/add-lesson/', add_lesson, name='add_lesson'),
+    path('club/<int:pk>/add-individual/', add_indiv_lesson, name='add_indiv_lesson'),
+
+    path('club/<int:pk>/group/<int:pk_group>/lesson/<int:pk_lesson>/delete/', delete_lesson, name='delete_lesson'),
+    path('club/<int:pk>/group/<int:pk_group>/lesson/<int:pk_lesson>/confirm_delete_lesson/', confirm_delete_lesson,
+         name='confirm_delete_lesson'),
+
+    path('club/<int:pk>/lesson/<pk_lesson>/students/', students_in_lesson, name='students_in_lesson'),
+
+    path('club/<int:pk>/lesson/<pk_lesson>/participant/<int:pk_participant>/change_status_false/',
+         change_status_false, name='change_status_false'),
+    path('club/<int:pk>/lesson/<pk_lesson>/participant/<int:pk_participant>/change_status_true/',
+         change_status_true, name='change_status_true'),
+
     ]
 

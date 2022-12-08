@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+        <h3>{{ title }}</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 ps-4">
+    <p>Вы уверены, что хотите удалить занятие {{ lesson.dt|date:'d.m.Y H:i' }}? Это действие необратимо!</p>
+    </div>
+      <div class="row">
+        <div class="col-6 text-start">
+          <a href="{% url 'students_in_lesson' club.pk lesson.pk %}">
+            <button class="save-button" type="button">Отменить</button>
+          </a>
+        </div>
+        <div class="col-6 text-end">
+          <a href="{% url 'confirm_delete_lesson' club.pk group.pk lesson.pk %}">
+            <button class="delete-button" type="button">Удалить</button>
+          </a>
+        </div>
+      </div>
+    <div class="col-3"></div>
+</div>
+
+{% endblock %}
+

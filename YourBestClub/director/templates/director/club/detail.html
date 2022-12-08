@@ -14,14 +14,14 @@
         <!--     1 строчка кнопок  -->
         <div class="row pt-3">
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="{% url 'trainers' club.pk %}">
               <div class="d-grid gap-2 ">
                 <button class="btn btn-outline-light my-color" type="button">Сотрудники</button>
               </div>
             </a>
           </div>
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="{% url 'groups' club.pk %}">
               <div class="d-grid gap-2">
                 <button class="btn btn-outline-light my-color" type="button">Группы</button>
               </div>
@@ -32,14 +32,14 @@
         <!--     2 строчка кнопок  -->
         <div class="row">
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="{% url 'subscription_list' club.pk %}">
               <div class="d-grid gap-2">
-                <button class="btn btn-outline-light my-color" type="button">Ученики</button>
+                <button class="btn btn-outline-light my-color" type="button">Абонементы</button>
               </div>
             </a>
           </div>
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="{% url 'club_schedule' club.pk %}">
               <div class="d-grid gap-2">
                 <button class="btn btn-outline-light my-color" type="button">Расписание</button>
               </div>
@@ -86,7 +86,7 @@
         <!--     5 строчка кнопок  -->
         <div class="row">
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="№">
               <div class="d-grid gap-2">
                 <button class="btn btn-outline-light my-color" type="button">Вклад в будущее</button>
               </div>

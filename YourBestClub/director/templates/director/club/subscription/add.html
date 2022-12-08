@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+        <h3>{{ title }}</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-8 ps-4">
+      <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <p>
+          <label for="{{ form.title.id_for_label }}">{{ form.title.label_tag }}</label>
+          <input type="text" name="title" class="form-control" maxlength="100" value="{{ form.title.value|default_if_none:'' }}" required id="{{ form.title.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.qty_lesson.id_for_label }}">{{ form.qty_lesson.label_tag }}</label>
+          <input type="number" placeholder="Укажите кол-во занятий. Например: 8" value="{{ form.qty_lesson.value }}" name="qty_lesson" class="form-control" maxlength="10" required id="{{ form.qty_lesson.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.cost.id_for_label }}">{{ form.cost.label_tag }}</label>
+          <input type="number" placeholder="Укажите стоимость в руб. Например: 3300" value="{{ form.cost.value }}" name="cost" class="form-control" maxlength="10" required id="{{ form.cost.id_for_label }}">
+        </p>
+        <p align="right">
+          <button class="save-button" type="submit">Сохранить</button>
+        </p>
+      </div>
+    </form>
+    </div>
+    <div class="col-3"></div>
+</div>
+
+{% endblock %}

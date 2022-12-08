@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+        <h2>Ученики</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 mt-1 mb-1">
+        <h5> <a class="black" href="{% url 'student_add' group.club.pk group.pk %}"><i class="bi bi-plus-square"></i> Добавить ученика</a></h5>
+    </div>
+</div>
+<div class="row">
+  {% for student in group.student_set.all %}
+  <div class="col-6 col-md-2 p-3">
+    <div class="row gx-3">
+      <div class="col-6 col-md-12 text-center p-0">
+        <a class="image" href="{% url 'student_detail' student.group.club.pk student.group.pk student.pk %}">
+          <div class="card bg-dark text-white">
+            <img class="img-fluid rounded" alt="{{ student }}" src="{{ student.avatar.url }}"/>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-12 text-center" style="word-wrap: break-word">
+        <small style="font-family: Oswald;">{{ student }}</small>
+      </div>
+    </div>
+  </div>
+    {% endfor %}
+</div>
+{% endblock %}

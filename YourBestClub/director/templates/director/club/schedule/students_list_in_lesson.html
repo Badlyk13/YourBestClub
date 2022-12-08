@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12 mt-3 mb-3 text-center">
+      {% if lesson.group %}
+      <h3>{{ lesson.dt|date:'d.m.Y H:i' }} - {{ lesson.group }}, {{ students.all.count }} чел. <a class="black" href="{% url 'delete_lesson' lesson.group.club.pk lesson.group.pk lesson.pk %}"><i class="bi bi-trash3" style="color: #c93c11"></i></a></h3>
+      {% else %}
+      <h3>{{ lesson.dt|date:'d.m.Y H:i' }} - {{ students.all.count }} чел. <a class="black" href="{% url 'delete_lesson' lesson.participant_set.all.first.student.group.club.pk lesson.participant_set.all.first.student.group.pk lesson.pk %}"><i class="bi bi-trash3" style="color: #c93c11"></i></a></h3>
+      {% endif %}
+    </div>
+</div>
+  <div class="row">
+    <div class="col">
+      {% if lesson.group %}
+      <h4><a class="black" href="{% url 'add_lesson' lesson.group.club.pk lesson.group.pk %}"><i class="bi bi-plus-square"></i> Добавить занятие</a></h4>
+      {% endif %}
+    </div>
+  </div>
+<div class="row">
+  <div class="col mt-1 mb-3">
+    <ul class="list-group">
+      {% for participant in students %}
+        <li class="list-group-item d-flex justify-content-between align-items-center" style="border-radius: 0.375em;font-weight: bold;color: #c93c11;background-color: #c5c5c5;">
+           <a href="{% url 'student_edit' participant.student.group.club.pk participant.student.group.pk participant.student.pk %}">{{ participant.student }}</a>
+          {% if participant.status %}
+        <a href="{% url 'change_status_false' participant.student.group.club.pk lesson.pk participant.pk %}"><span><i class="bi bi-clipboard-check" style="font-size: 1.25rem; color: green;font-weight: bold;"></i></span></a>
+          {% else %}
+          <a href="{% url 'change_status_true' participant.student.group.club.pk lesson.pk participant.pk %}"><span><i class="bi bi-clipboard-x" style="font-size: 1.25rem; color: red; font-weight: bold;"></i></span></a>
+        {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% if lesson.group.pk %}
+<p class="text-end"><a class='back' href="{% url 'group_schedule' lesson.group.club.pk lesson.group.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
+{% else %}
+<p class="text-end"><a class='back' href="{% url 'group_schedule' lesson.participant_set.all.first.student.group.club.pk lesson.participant_set.all.first.student.group.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
+
+{% endif %}
+{% endblock %}

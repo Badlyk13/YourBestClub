@@ -11,7 +11,15 @@
 {% block content %}
 
 <p>Вы уверены, что хотите удалить "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}"?</p>
-<a href="{% url 'delete_confirm' user_type user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+{% if user_type == 'director' %}
+  <a href="{% url 'director_delete_confirm' user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+{% elif user_type == 'trainer' %}
+  <a href="{% url 'trainer_delete_confirm' user_data.club.pk user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+{% elif user_type == 'student' %}
+  <a href="{% url 'student_delete_confirm' user_data.group.club.pk user_data.group.pk user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+{% elif user_type == 'group' %}
+  <a href="{% url 'student_delete_confirm' user_data.club.pk user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+{% endif %}
 <a class='black' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
 
 {% endblock %}

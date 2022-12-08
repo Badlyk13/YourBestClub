@@ -79,9 +79,16 @@
           <input type="number" name="cost_for_student" class="form-control" placeholder="0" value="{{ trainer.cost_for_student }}" maxlength="10" id="cost_for_student" required>
         </p>
       {% endif %}
-        <p align="right">
-          <button class="save-button" type="submit">Сохранить</button>
-        </p>
+        <div class="row">
+          <div class="col-6 text-start">
+            <a href="{% url 'trainer_delete' trainer.club.pk trainer.pk %}">
+              <button class="delete-button" type="button">Удалить</button>
+            </a>
+          </div>
+          <div class="col-6 text-end">
+            <button class="save-button" type="submit">Сохранить</button>
+          </div>
+        </div>
       </div>
     </form>
   </div>

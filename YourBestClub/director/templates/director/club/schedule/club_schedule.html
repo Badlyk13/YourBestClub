@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12 mt-3 mb-3 text-center">
+      {% if clubs.all.count == 1 %}
+        <h3>Расписание {{ clubs.all.first }}</h3>
+      {% else %}
+        <h3>Расписание клубов</h3>
+      {% endif %}
+    </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    {% for club in clubs %}
+      {% if groups %}
+        {% for group in groups %}
+          {% if group.club == club %}
+            <div class="row">
+              <div class="col">
+                {% if clubs.all.count == 1 %}
+                <h4><a class="black" href="{% url 'students' club.pk group.pk %}">{{ group }}</a>, ({{ group.student_set.all.count }} уч.)
+                {% else %}
+                 <a class="black" href="{% url 'detail_club' club.pk %}">{{ club.title }}</a> <small>{{ group }} ({{ group.student_set.all.count }} уч.)</small></h4>
+                {% endif %}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col mt-1 mb-3">
+                <ul class="list-group rounded">
+                  {% for lesson in lessons_group %}
+                  {% if lesson.group == group %}
+                    <a class="schedule" href="{% url 'students_in_lesson' club.pk lesson.pk %}">
+                      <li class="list-group-item d-flex justify-content-between align-items-center" style="border-radius: 0.375em;font-weight: bold;color: #c93c11;background-color: #c5c5c5;">
+                        {{ lesson.dt|date:'d.m.Y H:i' }} - {{ lesson.trainer.all|join:', ' }}
+                        {% load clubs_tags %}
+                        {% get_participant_true lesson.pk as qty %}
+                      <span class="badge rounded-pill">{{ qty }}</span>
+                      </li>
+                    </a>
+                  {% endif %}
+                  {% endfor %}
+
+                  {% for lesson in filtered_lessons_individuals %}
+                    {% if lesson.participant_set.all.first.student.group == group%}
+                      <a class="schedule" href="{% url 'students_in_lesson' club.pk lesson.pk %}" >
+                          <li class="list-group-item d-flex justify-content-between align-items-center" style="border-radius: 0.375em;font-weight: bold;color: #c93c11;background-color: #c5c5c5;">
+                            {% load clubs_tags %}
+                            {% get_participant_names lesson.pk as names %}
+                            {{ lesson.dt|date:'d.m.Y H:i' }} - {{ lesson.trainer.all|join:', ' }} ({{ names }})
+
+                          <span class="badge rounded-pill">{{ lesson.participant_set.all.count }}</span>
+                          </li>
+                        </a>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        На этой странице пусто, потому что вы не создали ни одной группы и расписание в них. Перейдите в раздел группы и задайте в них расписание.
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% if clubs.all.count == 1 %}
+  <p class="text-end"><a class='back' href="{% url 'club_detail' clubs.all.first.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
+  {% else %}
+  <p class="text-end"><a class='back' href="{% url 'detail' clubs.all.first.director.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
+
+  {% endif %}
+
+</div>
+{% endblock %}

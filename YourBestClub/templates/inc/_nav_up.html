@@ -6,8 +6,8 @@
         <li><a class="img-nav" href="/"><img class="nav-img" src="{% static '/logo2.png' %}" alt="" width="64" height="64"></a></li>
         {% if user.director %}
           {% if user.director.tgID %}
-            <li><a class="revers {{ d }}" href="{% url 'detail' 'director' user.director.pk %}">Кабинет</a></li>
-            <li><a class="revers" href="{}">Расписание</a></li>
+            <li><a class="revers {{ d }}" href="{% url 'detail' user.director.pk %}">Кабинет</a></li>
+            <li><a class="revers" href="{% url 'club_schedule' 0 %}">Расписание</a></li>
             <li><a class="revers" href="{}">Статистика</a></li>
             <li><a class="revers" href="{}">Новости</a></li>
             <li><a class="revers" href="{}">Финансы</a></li>

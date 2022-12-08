@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+        <h3>{{ title }}</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-md-8 ps-4">
+      <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <p>
+          <label for="{{ form.title.id_for_label }}">{{ form.title.label_tag }}</label>
+          <input type="text" name="title" class="form-control" maxlength="100" value="{{ form.title.value|default_if_none:'' }}" required id="{{ form.title.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.description.id_for_label }}">{{ form.description.label_tag }}</label>
+          <input type="text" name="description" class="form-control" maxlength="300" value="{{ form.description.value|default_if_none:'' }}" required id="{{ form.description.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.lesson_price.id_for_label }}">{{ form.lesson_price.label_tag }}</label>
+          <input type="number" placeholder="Укажите цифру в руб. Например: 450" value="{{ form.lesson_price.value }}" name="lesson_price" class="form-control" maxlength="10" required id="{{ form.lesson_price.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.notification.id_for_label }}">{{ form.notification.label_tag }}
+            <small><a class="black" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">💡 Подсказка</a></small>
+          </label>
+          <div class="collapse" id="collapseExample">
+            <div class="form-text mb-2" style="color: #c5c5c5">
+              <i><small>За сколько минут до тренировки присылать уведомление ученику. Например: если указано 180, а тренрировка запланирована на 17:00, то участники группы получат уведомление в 14:00.</small></i>
+            </div>
+          </div>
+          <input type="number" name="notification" placeholder="За сколько минут присылать уведомление. Например: 180" value="{{ form.notification.value }}" class="form-control" maxlength="10" required id="{{ form.notification.id_for_label }}">
+        </p>
+        <p>
+          <label for="{{ form.subscription.id_for_label }}">{{ form.subscription.label_tag }}</label>
+          <select class="form-select" multiple name="subscription" id="{{ form.subscription.id_for_label }}" aria-describedby="trainerHelpBlock">
+            {% for gr in form.subscription %}
+              <option value="{{ gr.data.value }}">{{ gr.data.label }}</option>
+            {% endfor %}
+          </select>
+          <div id="trainerHelpBlock" class="form-text d-none d-sm-block" style="color: #c5c5c5">
+            <i><small>* Для выбора вариантов используйте CTRL</small></i>
+          </div>
+        </p>
+        <p>
+          <ul class="list-inline mb-0">
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              <label for="blah">{{ form.avatar.label_tag }}    </label>
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 0px; margin-right: 0px;">
+              <img id='blah' class="avatar thumbnail" alt="{{ form.group.value }}" src="{{ group.avatar.url }}"/>
+            </li>
+            <li class="list-inline-item" style="margin: 0px; margin-left: 5px; margin-right: 0px;">
+              <input class="image" type="file" name="avatar" accept="image/*" id="id_avatar">
+            </li>
+          </ul>
+        </p>
+        <div class="row">
+          <div class="col-6 text-start">
+            <a href="{% url 'group_delete' group.club.pk group.pk %}">
+              <button class="delete-button" type="button">Удалить</button>
+            </a>
+          </div>
+          <div class="col-6 text-end">
+            <button class="save-button" type="submit">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </form>
+    </div>
+
+    <div class="col-3"></div>
+</div>
+    <script>
+    {{ form.avatar.id_for_label }}.onchange = evt => {
+      const [file] = {{ form.avatar.id_for_label }}.files
+      if (file) {
+        blah.src = URL.createObjectURL(file)
+      }
+    }
+    </script>
+{% endblock %}

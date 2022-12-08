@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-12 mt-3 mb-3 text-center">
+    <h3>Редактирование занятия</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+      <div class="form-group">
+        <p>
+          <label for="{{ form.dt.id_for_label }}">{{ form.dt.label_tag }}</label>
+          <input type="datetime-local" name="dt" class="form-control" value="{{ lesson.dt|date:'Y-m-d H:i' }}" maxlength="50" id="{{ form.dt.id_for_label }}">
+        </p>
+
+        <p>
+          <label for="{{ form.group.id_for_label }}">{{ form.group.label_tag }}</label>
+          <select class="form-select" name="group" id="{{ form.group.id_for_label }}" required>
+            {% for gr in form.group %}
+                {% if gr.data.label == group.title %}
+                  {% if gr.data.selected %}
+                <option value="{{ gr.data.value }}" selected>{{ gr.data.label }}</option>
+              {% else %}
+                <option value="{{ gr.data.value }}">{{ gr.data.label }}</option>
+                  {% endif %}
+                {% endif %}
+
+            {% endfor %}
+          </select>
+        </p>
+
+        <p>
+          <label for="{{ form.trainer.id_for_label }}">{{ form.trainer.label_tag }}</label>
+          <select class="form-select" multiple name="trainer" id="{{ form.trainer.id_for_label }}" required>
+            {% for gr in form.trainer %}
+              {% if gr.data in lesson.trainer.all %}
+              <option value="{{ gr.data.value }}" selected>{{ gr.data.label }}</option>
+            {% else %}
+              <option value="{{ gr.data.value }}">{{ gr.data.label }}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+        </p>
+      </div>
+      <div class="row">
+        <div class="col-12 text-end">
+          <button class="save-button" type="submit">Сохранить</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+</div>
+{% endblock %}
