@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-12 text-center">
+    <div class="row">
+      <div class="col-12 mt-1 text-center">
+        {% if period == 0 %}
+         <h2>Статистика. Индивидуальные.</h2>
+        {% elif period > 2000 %}
+          <h2>Статистика. Занятия. {{ period }}</h2>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row">
+    <div class="col-12 col-md-6">
+      <canvas id="myChart"></canvas>
+    </div>
+    <div class="col-12 col-md-6">
+      <canvas id="myChart2"></canvas>
+    </div>
+      </div>
+    <div class="row">
+      <div class="col-12 mt-3 text-center">
+        {% if period == 0 %}
+          <h6>Подробнее: | {% for item in data_title %}<a href="{% url 'stat_individuals' club.pk item %}" class="black">{{ item }}</a> | {% endfor %}</h6>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ctx = document.getElementById('myChart');
+  Chart.defaults.color = '#c5c5c5';
+  Chart.defaults.font.family = 'Montserrat';
+<!--  Chart.defaults.borderColor = '#c5c5c5';-->
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ data_title|safe }},
+      datasets: [
+      {
+        label: 'Индивидуальные',
+        data: {{ data_qty_ind }},
+        borderWidth: 1,
+        backgroundColor: '#fb00ff',
+        borderColor: '#fb00ff'
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+    }
+  });
+
+
+  const ctx2 = document.getElementById('myChart2');
+  new Chart(ctx2, {
+    type: 'pie',
+    data: {
+      labels: {{ data_trainers|safe }},
+      datasets: [
+      {
+        label: 'Занятия',
+        data: {{ data_qty_lesson }},
+        borderWidth: 1,
+        backgroundColor: ["#1e3560","#fb00ff","#9c1ccf","#da5bc1","#6e59b9","#82cf5d","#c8f728","#ef797d","#d67a62","#74a9ed","#a6a9cf"],
+        hoverOffset: 1,
+        borderColor: '#c5c5c5'
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+    }
+  });
+</script>
+{% endblock %}

@@ -134,7 +134,11 @@ p.second{
 }
 
 small{
+    font-family: Oswald;
     text-shadow: 0px 0px 5px black;
+}
+small.second {
+  text-shadow: 0px 0px 5px black;
 }
 label{
   font-family: Oswald;

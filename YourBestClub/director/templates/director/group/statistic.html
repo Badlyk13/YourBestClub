@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load accounts_tags %}
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+{% if group %}
+
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+        <h2>Статистика</h2>
+    </div>
+</div>
+<div class="row">
+  <div class="col-12 p-3">
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+const ctx = document.getElementById('myChart');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    datasets: [{
+      label: '# of Votes',
+      data: [12, 19, 3, 5, 2, 3],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
+});
+</script>
+{% endblock %}

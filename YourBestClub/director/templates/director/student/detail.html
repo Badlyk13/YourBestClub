@@ -10,12 +10,13 @@
 {% block content %}
 <div class="row">
     <div class="col-12 mt-1 mb-1">
-        <h5>Ставки: </h5>
+        <h5>Группа: <a href="{% url 'group_detail' student.group.club.pk student.group.pk %}" class="black">{{ student.group.title }}</a></h5>
     </div>
 </div>
 <div class="row">
   <div class="col-12 p-3">
-    <p>Ежемесячный оклад: {{ trainer.wage }}₽</p>
+    <p>Тренировок в группе: {{ qty_lesson }}</p>
+    <p>Тренировок индивидуально: {{ qty_lesson_ind }}</p>
     <p>Ставка за групповое занятие: {{ trainer.cost }}₽</p>
     <p>Ставка за индив. занятие: {{ trainer.cost_individual }}₽</p>
     <p>Стоимость индив. для ученика: {{ trainer.cost_for_student }}₽</p>

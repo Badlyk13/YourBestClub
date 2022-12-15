@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 
 from PIL import Image
+from django.utils import timezone
 
 from services.models import Service
 
@@ -200,8 +201,10 @@ class Student(models.Model):
     agent_name = models.CharField(max_length=128, verbose_name='Имя представителя')
     agent_phone = models.CharField(max_length=16, verbose_name='Телефон представителя')
     tgID = models.IntegerField(unique=True, blank=True, null=True, verbose_name='Телеграм')
+    qty_lesson = models.IntegerField(blank=True, default=0, verbose_name='Кол-во занятий')
     registered_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата регистрации')
     is_active = models.BooleanField(default=True, verbose_name='Активен')
+    no_active_at = models.DateTimeField(blank=True, null=True, verbose_name='Дата отключения')
 
     def __str__(self):
         return f'{self.surname} {self.name} {self.soname}'
@@ -223,10 +226,12 @@ class Student(models.Model):
             cropped.save(filepath)
         except:
             pass
-        lessons = Lesson.objects.filter(is_group=True, group=self.group)
-        if lessons:
-            for lesson in lessons:
-                participant = Participant.objects.create(lesson=lesson, student=self)
+
+        if self.is_active:
+            lessons = Lesson.objects.filter(is_group=True, group=self.group, dt__gte=timezone.now())
+            if lessons:
+                for lesson in lessons:
+                    participant = Participant.objects.create(lesson=lesson, student=self)
 
     class Meta:
         verbose_name = 'Ученик(а)'
@@ -271,4 +276,27 @@ class Participant(models.Model):
         verbose_name = 'Участник'
         verbose_name_plural = 'Участники'
         ordering = ['lesson']
+
+
+# ===========================================================================
+class Payment(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата/время')
+    amount = models.IntegerField(default=0, verbose_name='Сумма')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, verbose_name='Клуб', null=True)
+    assignment = models.CharField(max_length=150, verbose_name='Назначение', blank=True)
+    is_personal = models.BooleanField(default=False, verbose_name='Личное')
+    yookassa_id = models.CharField(max_length=150, verbose_name='ID Yookassa', blank=True)
+    yookassa_status = models.CharField(max_length=20, verbose_name='Статус Yookassa', blank=True)
+
+    def __str__(self):
+        return f'{self.created_at} | {self.amount} | {self.user} | {self.assignment}'
+
+    class Meta:
+        verbose_name = 'Платеж'
+        verbose_name_plural = 'Платежи'
+        ordering = ['-created_at']
+
+    def get_absolute_url(self):
+        return reverse('payment', kwargs={'pk': self.pk})
 

@@ -99,3 +99,9 @@ class ParticipantAdmin(admin.ModelAdmin):
 class ClubSubscriptionAdmin(admin.ModelAdmin):
     list_display = ('id', 'club', 'title', 'qty_lesson', 'cost')
     search_fields = ('id', 'club', 'title', 'qty_lesson')
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_at', 'club', 'amount', 'user', 'assignment', 'is_personal', 'yookassa_id', 'yookassa_status')
+    search_fields = ('id', 'created_at','club', 'amount', 'user', 'assignment', 'is_personal')

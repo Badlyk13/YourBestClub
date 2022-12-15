@@ -3,13 +3,16 @@ from django.core.cache import cache
 
 from django.db.models import Sum
 
+from director.models import Payment, Director
+
 register = template.Library()
 
 
-# @register.simple_tag
-# def get_balance(director_pk):
-#     balance = DirectorPay.objects.filter(director=director_pk, pay_system__in=('Система', 'Пополнение')).aggregate(Sum('amount'))['amount__sum']
-#     return balance
+@register.simple_tag
+def get_balance(pk):
+    director = Director.objects.select_related('user').get(pk=pk)
+    balance = Payment.objects.filter(user=director.user, is_personal=False).aggregate(Sum('amount'))
+    return balance['amount__sum']
 #
 #
 # @register.simple_tag

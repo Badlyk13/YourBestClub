@@ -10,15 +10,27 @@
 
 {% block content %}
 
-<p>Вы уверены, что хотите удалить "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}"?</p>
+
 {% if user_type == 'director' %}
+  {% if balance == 0 %}
+  <p>Вы уверены, что хотите удалить "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}"?</p>
   <a href="{% url 'director_delete_confirm' user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+  {% elif balance > 0 %}
+  <p>Чтобы удалить директора "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}" необходимо вывести все средства. Баланс должен быть равен 0!</p>
+  <a href=""><button type="button" class="delete-button">Вывести</button></a>
+  {% else%}
+  <p>Чтобы удалить директора "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}" необходимо закрыть задолженность. Баланс должен быть равен 0!</p>
+  <a href=""><button type="button" class="delete-button">Пополнить</button></a>
+  {% endif %}
 {% elif user_type == 'trainer' %}
+  <p>Вы уверены, что хотите удалить тренера: "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}"?</p>
   <a href="{% url 'trainer_delete_confirm' user_data.club.pk user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
 {% elif user_type == 'student' %}
+  <p>Вы уверены, что хотите удалить ученика: "{{ user_data.surname }} {{ user_data.name }} {{ user_data.soname }}"?</p>
   <a href="{% url 'student_delete_confirm' user_data.group.club.pk user_data.group.pk user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
 {% elif user_type == 'group' %}
-  <a href="{% url 'student_delete_confirm' user_data.club.pk user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
+  <p>Вы уверены, что хотите удалить группу: "{{ user_data.title }} ({{ user_data.club }})"?</p>
+  <a href="{% url 'group_delete_confirm' user_data.club.pk user_data.pk %}"> <button type="button" class="delete-button">Удалить</button> </a>
 {% endif %}
 <a class='black' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
 

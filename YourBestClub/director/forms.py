@@ -53,7 +53,7 @@ class TrainerForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['surname', 'name', 'soname', 'avatar', 'birthday', 'agent_name', 'agent_phone', 'group']
+        fields = ['surname', 'name', 'soname', 'avatar', 'birthday', 'agent_name', 'agent_phone', 'group', 'is_active']
 
     def clean_phone(self):
         return clean_unique(self, 'agent_phone')

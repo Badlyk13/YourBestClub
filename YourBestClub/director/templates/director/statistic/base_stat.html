@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+        <h3>{{ title }}</h3>
+    </div>
+</div>
+<div class="row">
+  <div class="col-12 col-md-8 ps-4">
+    <div class="row text-center">
+      <div class="col-12 col-md-4 mb-3">
+        <a href="{% url 'stat_registered_students' club.pk 0 %}"><button class="user-type-button"> Ученики </button></a>
+      </div>
+
+      <div class="col-12 col-md-4 mb-3">
+        <a href="{% url 'stat_club_finances' club.pk 0 %}"><button class="user-type-button"> Финансы </button></a>
+      </div>
+
+      <div class="col-12 col-md-4 mb-3">
+        <a href="{% url 'stat_lessons' club.pk 0 %}"><button class="user-type-button"> Тренировки </button></a>
+      </div>
+
+    </div>
+  </div>
+  <div class="col-3">
+  </div>
+</div>
+{% endblock %}

@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from YourBestClub import settings
 from director.views import *
+from director.statistic import *
 
 urlpatterns = [
     path('403Forbidden/', forbidden_403, name='403Forbidden'),
@@ -25,7 +26,7 @@ urlpatterns = [
     path('director/<int:pk>/detail', director_detail, name='detail'),
     path('director/<int:pk>/edit_details', director_edit_details, name='edit_details'),
     path('director/<int:pk>/delete/', director_delete, name='director_delete'),
-    path('director/<int:pk>/delete-confirm/', director_delete_confirm, name='delete_confirm'),
+    path('director/<int:pk>/delete-confirm/', director_delete_confirm, name='director_delete_confirm'),
 
     path('club/<int:pk>/subscription-add/', subscription_add, name='subscription_add'),
     path('club/<int:pk>/subscription-list/', subscription_list, name='subscription_list'),
@@ -35,6 +36,7 @@ urlpatterns = [
 
     path('club/<int:pk>/group-add/', group_add, name='group_add'),
     path('club/<int:pk>/group/<int:pk_group>/detail', group_detail, name='group_detail'),
+    # path('club/<int:pk>/group/<int:pk_group>/statistic', group_statistic, name='group_statistic'),
     path('club/<int:pk>/group/<int:pk_group>/edit', group_edit, name='group_edit'),
     path('club/<int:pk>/groups/', group_list, name='groups'),
     path('club/<int:pk>/group/<int:pk_group>/delete/', group_delete, name='group_delete'),
@@ -77,5 +79,17 @@ urlpatterns = [
     path('club/<int:pk>/mailing/', club_mailing, name='club_mailing'),
     path('personal-mailing/<int:rec_type>/<int:pk_rec>/', personal_mailing, name='personal_mailing'),
 
+
+    # ============================== STATISTICS =============================
+    path('club/<int:pk>/statistic/', stat_home, name='stat_home'),
+    path('club/<int:pk>/statistic/<int:period>/', stat_club_finances, name='stat_club_finances'),
+    path('club/<int:pk>/statistic/<int:year>/<int:month>/', stat_club_finances_month, name='stat_club_finances_month'),
+    path('club/<int:pk>/statistic/detail/', stat_detail, name='stat_detail'),
+    path('club/<int:pk>/statistic/detail/download', download_detail, name='download_detail'),
+
+    path('club/<int:pk>/statistic/lessons/<int:year>/', stat_lessons, name='stat_lessons'),
+    path('club/<int:pk>/statistic/individuals/<int:year>/', stat_individuals, name='stat_individuals'),
+
+    path('club/<int:pk>/statistic/students/<int:year>/', stat_registered_students, name='stat_registered_students'),
     ]
 

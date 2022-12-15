@@ -1,6 +1,7 @@
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
+from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
@@ -11,7 +12,7 @@ from YourBestClub.utils import finding_user, create_password
 from director.forms import UserLoginForm, UserCreateForm, DirectorForm, TrainerForm, StudentForm, CreateClubForm, \
     CreateGroupForm, CreateSubscriptionForm, CreateLessonForm, CreateIndividualLessonForm, ClubMailingForm, \
     PersonalMailingForm
-from director.models import Director, Trainer, Student, ClubGroup, Club, ClubSubscription, Lesson, Participant
+from director.models import Director, Trainer, Student, ClubGroup, Club, ClubSubscription, Lesson, Participant, Payment
 from PIL import Image
 
 
@@ -28,7 +29,7 @@ def user_login(request):
             login(request, user)
             messages.success(request, 'Успешная авторизация!')
             if request.user.director:
-                return redirect('detail', user_type='director', pk=user.director.pk)
+                return redirect('detail', pk=user.director.pk)
             if request.user.trainer:
                 return redirect('detail', user_type='trainer', pk=user.trainer.pk)
             if request.user.student:
@@ -41,7 +42,7 @@ def user_login(request):
         if request.user.is_authenticated:
             print('You authenticated')
             if request.user.director:
-                return redirect('detail', user_type='director', pk=request.user.director.pk)
+                return redirect('detail', pk=request.user.director.pk)
             if request.user.trainer:
                 return redirect('detail', user_type='trainer', pk=request.user.trainer.pk)
             if request.user.student:
@@ -127,9 +128,12 @@ def director_detail(request, pk):
 
 @login_required
 def director_delete(request, pk):
-    director = Director.objects.get(pk=pk)
+    director = Director.objects.select_related('user').get(pk=pk)
+    balance = Payment.objects.filter(user=director.user, is_personal=False).aggregate(Sum('amount'))['amount__sum']
+    if balance is None:
+        balance = 0
     return render(request, f'director/registration/delete.html',
-                  {'title': 'Удаление', 'user_data': director, 'user_type': 'director'})
+                  {'title': 'Удаление', 'user_data': director, 'user_type': 'director', 'balance': balance})
 
 
 @login_required
@@ -550,9 +554,11 @@ def student_list(request, pk, pk_group):
 def student_detail(request, pk, pk_group, pk_student):
     group = ClubGroup.objects.select_related('club').get(pk=pk_group)
     student = Student.objects.get(pk=pk_student)
+    qty_lesson = Participant.objects.filter(student=student, status=True, lesson__is_group=True, lesson__dt__lt=timezone.now()).count()
+    qty_lesson_ind = Participant.objects.filter(student=student, status=True, lesson__is_group=False, lesson__dt__lt=timezone.now()).count()
     if request.user.director == group.club.director:
         return render(request, 'director/student/detail.html',
-                      {'title': student, 'student': student})
+                      {'title': student, 'student': student, 'qty_lesson': qty_lesson, 'qty_lesson_ind': qty_lesson_ind})
     else:
         return redirect('403Forbidden')
 
@@ -601,7 +607,9 @@ def student_delete_confirm(request, pk, pk_group, pk_student):
     group = ClubGroup.objects.select_related('club').get(pk=pk_group)
     if request.user.director == group.club.director:
         student = Student.objects.get(pk=pk_student)
-        student.delete()
+        student.is_active = False
+        student.no_active_at = timezone.now()
+        student.save()
         return redirect('students', pk=group.club.pk, pk_group=pk_group)
     else:
         return redirect('403Forbidden')
@@ -885,6 +893,8 @@ def personal_mailing(request, rec_type, pk_rec):
         form = PersonalMailingForm()
         return render(request, 'director/club/mailing/personal_mailing.html',
                       {'title': 'Личное сообщение', 'form': form, 'recipient': recipient, 'rec_type': rec_type_str, f'{user_type}': user_data})
+
+# -------------------------------------- СТАТИСТИКА  -----------------------------
 
 
 
