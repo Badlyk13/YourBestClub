@@ -17,7 +17,7 @@
         <img class="img-fluid rounded" src="{{ post.photo.url }}"/><br>
         <br>
         {{ post.content|safe|truncatewords:20 }}
-        <a class="mylinks text-reversed" href="{{ post.get_absolute_url }}"> Подробнее ></a>
+        <a class="black" href="{{ post.get_absolute_url }}"> Подробнее ></a>
         <hr>
         <div class="text-end"><small class="text-muted">
           <i>{{ post.created_at|date:'m.d.Y H:i' }}&nbsp;&nbsp;&nbsp;
@@ -26,13 +26,14 @@
       </div>
       <!--    Конец Контент новости  -->
       <!--    Список новостей   -->
+      {% get_news %}
     </div>
     {% endfor %}
   </div>
   <div class="row">
     <div class="col-12 mt-3 text-end">
       <p class="card-text d-block d-sm-none text-start">
-        <a class='mylinks' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
+        <a class='black' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
       </p>
     </div>
   </div>

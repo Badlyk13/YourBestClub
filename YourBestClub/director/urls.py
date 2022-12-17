@@ -3,6 +3,7 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from YourBestClub import settings
+from director.finances import *
 from director.views import *
 from director.statistic import *
 
@@ -91,5 +92,13 @@ urlpatterns = [
     path('club/<int:pk>/statistic/individuals/<int:year>/', stat_individuals, name='stat_individuals'),
 
     path('club/<int:pk>/statistic/students/<int:year>/', stat_registered_students, name='stat_registered_students'),
+    path('club/<int:pk>/group/<int:pk_group>/statistic/<int:year>/', stat_group_students, name='stat_group_students'),
+
+    # ============================== FINANCES =============================
+    path('club/<int:pk>/finances/', fin_clubs, name='fin_clubs'),
+    path('club/<int:pk>/finances/<type>/detail/', fin_details, name='fin_details'),
+
+    path('club/<int:pk>/donation/', donat, name='donat'),
+    path('club/<int:pk>/events/', events, name='events'),
     ]
 

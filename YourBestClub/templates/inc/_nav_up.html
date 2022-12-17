@@ -8,9 +8,9 @@
           {% if user.director.tgID %}
             <li><a class="revers {{ d }}" href="{% url 'detail' user.director.pk %}">Кабинет</a></li>
             <li><a class="revers" href="{% url 'club_schedule' 0 %}">Расписание</a></li>
-            <li><a class="revers" href="{}">Статистика</a></li>
-            <li><a class="revers" href="{}">Новости</a></li>
-            <li><a class="revers" href="{}">Финансы</a></li>
+            <li><a class="revers" href="{% url 'events' 0 %}">Мероприятия</a></li>
+            <li><a class="revers" href="{% url 'last_news' %}">Новости</a></li>
+            <li><a class="revers" href="{% url 'fin_clubs' 0 %}">Финансы</a></li>
           {% else %}
             <li><a class="revers disabled" href="#">Кабинет</a></li>
             <li><a class="revers disabled" href="#">Расписание</a></li>

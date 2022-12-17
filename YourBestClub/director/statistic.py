@@ -184,7 +184,6 @@ def stat_registered_students(request, pk, year):
             cur_year = min_year
             while cur_year <= timezone.now().year:
                 qty_students = students.filter(registered_at__year=cur_year).count()
-                # total = students.filter(registered_at__year__lte=cur_year).exclude(no_active_at__year=cur_year).count()
                 total = students.filter(registered_at__year__lte=cur_year).count()
                 qty_leave = students.filter(no_active_at__year=cur_year).count()
                 qty_leave_total = students.filter(no_active_at__year__lte=cur_year).count()
@@ -206,6 +205,47 @@ def stat_registered_students(request, pk, year):
                 data_qty_leave.append(qty_leave)
 
         return render(request, 'director/statistic/students_registration.html', {'title': 'Статистика', 'club': club,
+                                                                                 'data_title': data_title,
+                                                                                 'data_qty_students': data_qty_students,
+                                                                                 'data_total': data_total,
+                                                                                 'data_qty_leave': data_qty_leave,
+                                                                                 'period': year})
+    else:
+        return redirect('403Forbidden')
+
+
+# =============================== ГРУППА ===========================================
+def stat_group_students(request, pk, pk_group, year):
+    group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if request.user.director == group.club.director:
+        students = Student.objects.filter(group__pk=pk_group)
+        data_title, data_qty_students, data_total, data_max_in_lesson, data_qty_leave = [], [], [], [], []
+        if year == 0:
+            min_year = students.order_by('registered_at')[0].registered_at.year
+            cur_year = min_year
+            while cur_year <= timezone.now().year:
+                qty_students = students.filter(registered_at__year=cur_year).count()
+                total = students.filter(registered_at__year__lte=cur_year).count()
+                qty_leave = students.filter(no_active_at__year=cur_year).count()
+                qty_leave_total = students.filter(no_active_at__year__lte=cur_year).count()
+                data_title.append(cur_year)
+                data_qty_students.append(qty_students)
+                data_total.append(total-qty_leave_total)
+                data_qty_leave.append(qty_leave)
+                cur_year += 1
+
+        else:
+            data_title = MONTH
+            for i in range(1, 13):
+                qty_students = students.filter(registered_at__year=year, registered_at__month=i).count()
+                total = students.filter(registered_at__year=year, registered_at__month__lte=i).count()
+                qty_leave = students.filter(no_active_at__year=year, no_active_at__month=i).count()
+                qty_leave_total = students.filter(no_active_at__year__lte=year, no_active_at__month__lte=i).count()
+                data_qty_students.append(qty_students)
+                data_total.append(total-qty_leave_total)
+                data_qty_leave.append(qty_leave)
+
+        return render(request, 'director/statistic/group_students.html', {'title': 'Статистика', 'group': group,
                                                                                  'data_title': data_title,
                                                                                  'data_qty_students': data_qty_students,
                                                                                  'data_total': data_total,

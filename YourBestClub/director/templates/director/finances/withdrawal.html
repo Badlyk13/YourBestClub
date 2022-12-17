@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+{% if club %}
+<div class="row">
+  <div class="col-12 mb-3">
+<!--    <h4><a class="black" href="{% url 'club_detail' club.pk %}">{{ club.title }}</a></h4>-->
+
+    <h5>Доходы: {{ incoming }}₽ <small><a class="black" href="{% url 'fin_details' club.pk 'incoming' %}">Детализация</a></small></h5>
+<!--    <h5>Расходы: {{ director_expenses }}₽</h5>-->
+    <h5>Расходы: {{ expenses }}₽ <small><a class="black" href="{% url 'fin_details' club.pk 'expenses' %}">Детализация</a></small> </h5>
+    <h5>Личные: {{ personal }}₽ <small><a class="black" href="{% url 'fin_details' club.pk 'personal' %}">Детализация</a></small> </h5>
+    <h5>Итого: {{ total }}₽</h5>
+
+  </div>
+</div>
+
+{% else %}
+<div class="row">
+  <div class="col-12 mb-3">
+    <h4>Общие показатели:</h4>
+
+    <h5>Доходы: {{ incoming }}₽ <small><a class="black" href="{% url 'fin_details' 0 'incoming' %}">Детализация</a></small></h5>
+<!--    <h5>Расходы: {{ director_expenses }}₽</h5>-->
+    <h5>Расходы: {{ expenses }}₽ <small><a class="black" href="{% url 'fin_details' 0 'expenses' %}">Детализация</a></small> </h5>
+    <h5>Личные: {{ personal }}₽ <small><a class="black" href="{% url 'fin_details' 0 'personal' %}">Детализация</a></small> </h5>
+    <h5>Итого: {{ total }}₽</h5>
+
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

@@ -894,7 +894,26 @@ def personal_mailing(request, rec_type, pk_rec):
         return render(request, 'director/club/mailing/personal_mailing.html',
                       {'title': 'Личное сообщение', 'form': form, 'recipient': recipient, 'rec_type': rec_type_str, f'{user_type}': user_data})
 
-# -------------------------------------- СТАТИСТИКА  -----------------------------
+
+# -------------------------------------- ВКЛАД В БУДУЩЕЕ  -----------------------------
+def donat(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        return render(request, 'director/club/investing.html',
+                      {'title': 'Вклад в будущее', 'club': club})
+    else:
+        return redirect('403Forbidden')
 
 
+# -------------------------------------- МЕРОПРИЯТИЯ  -----------------------------
+def events(request, pk):
+    if pk > 0:
+        club = Club.objects.select_related('director').get(pk=pk)
+        if request.user.director == club.director:
+            return render(request, 'director/club/events.html',
+                          {'title': 'Мероприятия', 'club': club})
+        else:
+            return redirect('403Forbidden')
 
+    return render(request, 'director/club/events.html',
+                  {'title': 'Мероприятия', 'director': request.user.director})

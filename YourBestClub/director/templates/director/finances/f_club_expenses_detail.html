@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="row">
+  <div class="col-12 mb-3">
+    {% if club %}
+    <h4><a class="black" href="{% url 'detail_club' club.pk %}">{{ club.title }}</a></h4>
+    {% else %}
+    <h4>Общая детализация:</h4>
+    {% endif %}
+    <div id="myBtnContainer">
+      <button class="btn-fin active" onclick="filterSelection('full')"> Все</button>
+      <button class="btn-fin" onclick="filterSelection('year')"> Год </button>
+      <button class="btn-fin" onclick="filterSelection('quart')"> Квартал </button>
+      <button class="btn-fin" onclick="filterSelection('month')"> Месяц</button>
+    </div>
+
+    <div class="container-filter mt-3">
+      <div class="filterDiv full">
+        {% for item in trainer_payments %}
+        <div class="row p-1" style="border-top: 1px solid; border-bottom: 1px solid;font-size: 0.85em">
+          <div class="col-3" style="border-right: 1px solid;">
+            {{ item.created_at|date:'d.m.Y H:i' }}
+          </div>
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.amount }}
+          </div>
+          <div class="col-5" style="border-right: 1px solid;">
+            <a class="black" href="{% url 'trainer_edit' item.trainer.pk %}">{{ item.trainer.surname }} {{ item.trainer.name|slice:'1' }}. {{ item.trainer.soname|slice:'1' }}</a>
+          </div>
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.assignment }}
+          </div>
+        </div>
+        {% endfor %}
+
+
+      </div>
+      <div class="filterDiv year">
+        {% for item in trainer_payments_year %}
+        <div class="row p-1" style="border-top: 1px solid; border-bottom: 1px solid;font-size: 0.85em">
+          <div class="col-3" style="border-right: 1px solid;">
+            {{ item.created_at|date:'d.m.Y H:i' }}
+          </div>
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.amount }}
+          </div>
+          <div class="col-5" style="border-right: 1px solid;">
+            <a class="black" href="{% url 'trainer_edit' item.trainer.pk %}">{{ item.trainer.surname }} {{ item.trainer.name|slice:'1' }}. {{ item.trainer.soname|slice:'1' }}</a>
+          </div>
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.assignment }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="filterDiv quart">
+        {% for item in trainer_payments_quart %}
+        <div class="row p-1" style="border-top: 1px solid; border-bottom: 1px solid;font-size: 0.85em">
+          <div class="col-3" style="border-right: 1px solid;">
+            {{ item.created_at|date:'d.m.Y H:i' }}
+          </div>
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.amount }}
+          </div>
+          <div class="col-5" style="border-right: 1px solid;">
+            <a class="black" href="{% url 'trainer_edit' item.trainer.pk %}">{{ item.trainer.surname }} {{ item.trainer.name|slice:'1' }}. {{ item.trainer.soname|slice:'1' }}</a>
+          </div>
+
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.assignment }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="filterDiv month">
+        {% for item in trainer_payments_month %}
+        <div class="row p-1" style="border-top: 1px solid; border-bottom: 1px solid;font-size: 0.85em">
+          <div class="col-3" style="border-right: 1px solid;">
+            {{ item.created_at|date:'d.m.Y H:i' }}
+          </div>
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.amount }}
+          </div>
+          <div class="col-5" style="border-right: 1px solid;">
+            <a class="black" href="{% url 'trainer_edit' item.trainer.pk %}">{{ item.trainer.surname }} {{ item.trainer.name|slice:'1' }}. {{ item.trainer.soname|slice:'1' }}</a>
+          </div>
+          <div class="col-2" style="border-right: 1px solid;">
+            {{ item.assignment }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+filterSelection("full")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("filterDiv");
+  if (c == "all") c = "";
+  // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+  for (i = 0; i < x.length; i++) {
+    w3RemoveClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+  }
+}
+
+// Show filtered elements
+function w3AddClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {
+      element.className += " " + arr2[i];
+    }
+  }
+}
+
+// Hide elements that are not selected
+function w3RemoveClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+// Add active class to the current control button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn-fin");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+</script>
+
+
+{% endblock %}

@@ -4,12 +4,14 @@ from django.db import models
 # Create your models here.
 
 class Service(models.Model):
+    ONCE = 'O'
     EVERY_DAY = 'D'
     EVERY_WEEK = 'W'
     EVERY_MONTH = 'M'
     EVERY_QUART = 'Q'
     EVERY_YEAR = 'Y'
     PERIODICITY = (
+        (ONCE, 'Единоразово'),
         (EVERY_DAY, 'Ежедневно'),
         (EVERY_WEEK, 'Еженедельно'),
         (EVERY_WEEK, 'Ежемесячно'),

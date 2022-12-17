@@ -114,7 +114,7 @@
 
       <div class="col text-center pt-2">
         <div class="row">
-          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{}"> Статистика </a>|</small></div>
+          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{% url 'stat_group_students' group.club.pk group.pk 0 %}"> Статистика </a>|</small></div>
           <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{% url 'group_schedule' group.club.pk group.pk %}"> Расписание </a>|</small></div>
         </div>
       </div>

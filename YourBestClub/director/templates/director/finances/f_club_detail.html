@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+
+{{ title }} :: {{ block.super }}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12 mt-1 text-center">
+      {% if club %}
+        <h2>Детализация. {{ type }} | <a class="black" href="{% url 'download_detail' club.pk %}"> Скачать </a></h2>
+      {% else %}
+        <h2>Детализация. {{ type }}</h2>
+      {% endif %}
+    </div>
+</div>
+
+<div class="row px-2">
+    <div class="col-12 mt-3 mb-3 text-center">
+    <form method="post" enctype="multipart/form-data">  {% csrf_token %}
+        <div class="row">
+          <div class="col-5 px-1">
+            <input type="date" class="form-control" value="{{ start_date }}" aria-label="start" name="start" id="{{ form.start.id_for_label }}">
+          </div>
+          <div class="col-5 px-1">
+            <input type="date" class="form-control" value="{{ today }}" aria-label="end" name="end" id="{{ form.end.id_for_label }}">
+          </div>
+          <div class="col-2 px-1">
+            <button type="submit" class="btn btn-outline-light my-color">Ок</button>
+          </div>
+        </div>
+      </form>
+    </div>
+</div>
+
+<div class="row px-2">
+  <div class="col-12">
+    <div class="row border rounded-1" style="border-color: #c5c5c5!important">
+      <div class="col-3 mt-1">
+        <h6>Дата</h6>
+      </div>
+      <div class="col-2 mt-1 text-center">
+        <h6>Сумма</h6>
+      </div>
+      <div class="col-3 mt-1">
+        <h6>Пользователь</h6>
+      </div>
+      <div class="col-4 mt-1 text-center">
+        <h6>Назначение</h6>
+      </div>
+    </div>
+    {% for payment in payments %}
+    <div class="row border rounded-1" style="border-color: #c5c5c5!important">
+      <div class="col-3 mt-1">
+      <small>{{ payment.created_at }}</small>
+      </div>
+      <div class="col-2 mt-1 text-center">
+        <small>{{ payment.amount }}₽</small>
+      </div>
+      <div class="col-3 mt-1">
+        {% if payment.user.director %}
+        <small>{{ payment.user.director }}</small>
+        {% elif payment.user.trainer %}
+        <small>{{ payment.user.trainer }}</small>
+        {% else %}
+        <small>{{ payment.user.student }}</small>
+        {% endif %}
+      </div>
+      <div class="col-4 mt-1 text-center">
+        <small>{{ payment.assignment }}</small>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

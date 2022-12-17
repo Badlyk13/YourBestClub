@@ -2,14 +2,14 @@
   <div class="card mb-3">
     <div class="row g-0">
       {% for post in posts %}
-      <div class="col-md-4 mb-3">
+      <div class="col-md-4">
         <img src="{{ post.photo.url }}" class="img-fluid rounded-start" alt="...">
       </div>
-      <div class="col-md-8 mb-3 ps-2">
+      <div class="col-md-8 ps-2">
         <a href="{{ post.get_absolute_url }}">
-          <small class="mylinks text" style=" font-family: 'Oswald', sans-serif;">{{ post.title|safe|truncatewords:6 }}</small><br>
-          <small class="text-muted" style=" font-family: 'Oswald', sans-serif;"><i>{{ post.created_at|date:'d.m.Y H:i' }}</i></small>
+          <small>{{ post.title|safe|truncatewords:6 }}</small><br>
         </a>
+        <small class="noShadow"><i>{{ post.created_at|date:'d.m.Y H:i' }}</i></small>
       </div>
       {% endfor %}
     </div>

@@ -106,3 +106,13 @@ class PersonalMailingForm(forms.Form):
     subject = forms.CharField(max_length=50, label='Тема')
     text = forms.CharField(max_length=1000, label='Текст')
     image = forms.ImageField(label='Изображение', required=False)
+
+
+class FilterFinDetailsForm(forms.Form):
+    start = forms.DateField(label='Дата начала')
+    end = forms.DateField(label='Дата окончания')
+
+
+class WithdrawalForm(forms.Form):
+    amount = forms.IntegerField(label='Сумма')
+    card = forms.IntegerField(label='Номер карты')

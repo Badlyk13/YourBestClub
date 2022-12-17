@@ -57,7 +57,7 @@
             </a>
           </div>
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="{% url 'fin_clubs' club.pk %}">
               <div class="d-grid gap-2">
                 <button class="btn btn-outline-light my-color" type="button">Финансы</button>
               </div>
@@ -68,7 +68,7 @@
         <!--     4 строчка кнопок  -->
         <div class="row">
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="{% url 'all_services' club.pk %}">
               <div class="d-grid gap-2">
                 <button class="btn btn-outline-light my-color" type="button">Услуги</button>
               </div>
@@ -86,14 +86,14 @@
         <!--     5 строчка кнопок  -->
         <div class="row">
           <div class="col-md-6 mb-4">
-            <a href="№">
+            <a href="{% url 'donat' club.pk %}">
               <div class="d-grid gap-2">
                 <button class="btn btn-outline-light my-color" type="button">Вклад в будущее</button>
               </div>
             </a>
           </div>
           <div class="col-md-6 mb-4">
-            <a href="{}">
+            <a href="{% url 'events' club.pk %}">
               <div class="d-grid gap-2">
                 <button class="btn btn-outline-light my-color" type="button">Мероприятия</button>
               </div>
