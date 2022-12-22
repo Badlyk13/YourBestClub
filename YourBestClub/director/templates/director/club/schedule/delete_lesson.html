@@ -14,12 +14,20 @@
     </div>
       <div class="row">
         <div class="col-6 text-start">
-          <a href="{% url 'students_in_lesson' club.pk lesson.pk %}">
+          {% if lesson.group %}
+            <a href="{% url 'students_in_lesson' lesson.group.club.pk lesson.pk %}">
+          {% else %}
+            <a href="{% url 'students_in_lesson' lesson.participant_set.first.student.group.club.pk lesson.pk %}">
+          {% endif %}
             <button class="save-button" type="button">Отменить</button>
           </a>
         </div>
         <div class="col-6 text-end">
-          <a href="{% url 'confirm_delete_lesson' club.pk group.pk lesson.pk %}">
+          {% if lesson.group %}
+            <a href="{% url 'confirm_delete_lesson' lesson.group.club.pk lesson.group.pk lesson.pk %}">
+          {% else %}
+            <a href="{% url 'confirm_delete_lesson' lesson.participant_set.first.student.group.club.pk lesson.participant_set.first.student.group.pk lesson.pk %}">
+          {% endif %}
             <button class="delete-button" type="button">Удалить</button>
           </a>
         </div>

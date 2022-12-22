@@ -33,6 +33,31 @@ a.black:hover {
   text-shadow: 0px 0px 10px #c5c5c5;
 }
 
+a.orange {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 7px rgba(0, 0, 0, .3);
+}
+
+a.orange:hover {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 10px white;
+  transform: translateY(-3px)
+}
+
+a.orange-schedule {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 7px rgba(0, 0, 0, .3);
+}
+
+a.orange-schedule:hover {
+  text-decoration: none;
+  color: #c93c11;
+  text-shadow: 0px 0px 10px white;
+}
+
 a.revers {
   text-decoration: none;
   color: #c5c5c5;

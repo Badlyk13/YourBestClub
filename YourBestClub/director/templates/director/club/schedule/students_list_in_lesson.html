@@ -30,7 +30,7 @@
     <ul class="list-group">
       {% for participant in students %}
         <li class="list-group-item d-flex justify-content-between align-items-center" style="border-radius: 0.375em;font-weight: bold;color: #c93c11;background-color: #c5c5c5;">
-           <a href="{% url 'student_edit' participant.student.group.club.pk participant.student.group.pk participant.student.pk %}">{{ participant.student }}</a>
+           <a class="orange" href="{% url 'student_detail' participant.student.group.club.pk participant.student.group.pk participant.student.pk %}">{{ participant.student }}</a>
           {% if participant.status %}
         <a href="{% url 'change_status_false' participant.student.group.club.pk lesson.pk participant.pk %}"><span><i class="bi bi-clipboard-check" style="font-size: 1.25rem; color: green;font-weight: bold;"></i></span></a>
           {% else %}

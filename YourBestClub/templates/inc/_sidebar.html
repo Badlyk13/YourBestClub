@@ -16,8 +16,8 @@
       <div class="col-12 text-center pt-1"><h5> Баланс: {{ balance|default_if_none:"0" }}₽</h5></div>
       <div class="col text-center pt-0">
         <div class="row">
-          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{}"> Вывод </a>|</small></div>
-          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{}"> Пополнение </a>|</small></div>
+          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{% url 'withdrawal' %}"> Вывод </a>|</small></div>
+          <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{% url 'refill' %}"> Пополнение </a>|</small></div>
         </div>
       </div>
     </div>
@@ -69,11 +69,14 @@
     <div class="row">
       <div class="col-12 text-center pt-3"><h3>{{ trainer.surname }} {{ trainer.name }} {{ trainer.soname }}</h3></div>
       <div class="col-12 text-center pt-3"> <p><a class='black' href="tel:{{ trainer.phone }}"><i class="bi bi-telephone"></i> {{ trainer.phone }}</a></p></div>
+      <div class="col-12 text-center"> <p><a class='black' href="{% url 'add_indiv_lesson' trainer.club.pk %}"><i class="bi bi-plus-square"></i> <small>Создать занятие</small> </a></p></div>
+
+
       {% comment %}
       {% get_st_balance student.pk as balance %}
 <!--      Здесь можно получать текущую зарплату-->
       <div class="col-12 text-center pt-3"><h5> Баланс: {{ balance|default_if_none:"0" }}₽</h5></div>
-            {% endcomment %}
+      {% endcomment %}
     </div>
   </div>
   {% endif %}
@@ -90,7 +93,7 @@
   </div>
   <div class="col-6 col-md-12 text-center">
     <div class="row">
-      <div class="col-12 text-center pt-3"><h3>{{ student.surname }} {{ student.name }} {{ student.soname }}</h3></div>
+      <div class="col-12 text-center pt-2"><h3>{{ student.surname }} {{ student.name }} {{ student.soname }}</h3></div>
       <div class="col-12 text-center pt-0"> <p><a class='black' href="tel:{{ student.agent_phone }}"><i class="bi bi-telephone"></i> {{ student.agent_phone }}</a> <small style="second">({{ student.agent_name }})</small></p></div>
       <div class="col-12 text-center pt-0"><h5>Доступно занятий: {{ student.qty_lesson }} </h5></div>
     </div>

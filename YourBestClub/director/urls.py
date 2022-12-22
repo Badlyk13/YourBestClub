@@ -57,12 +57,13 @@ urlpatterns = [
     path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/edit', student_edit, name='student_edit'),
     path('club/<int:pk>/group/<int:pk_group>/students/', student_list, name='students'),
     path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/delete/', student_delete, name='student_delete'),
-    path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_tstudent>/delete-confirm/', student_delete_confirm,
+    path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/delete-confirm/', student_delete_confirm,
          name='student_delete_confirm'),
 
     path('club/<int:pk>/schedule/', club_schedule, name='club_schedule'),
     path('club/<int:pk>/group/<int:pk_group>/schedule/', group_schedule, name='group_schedule'),
 
+    path('club/<int:pk>/lesson-type/', lesson_type_choice, name='lesson_type_choice'),
     path('club/<int:pk>/group/<int:pk_group>/add-lesson/', add_lesson, name='add_lesson'),
     path('club/<int:pk>/add-individual/', add_indiv_lesson, name='add_indiv_lesson'),
 
@@ -97,8 +98,11 @@ urlpatterns = [
     # ============================== FINANCES =============================
     path('club/<int:pk>/finances/', fin_clubs, name='fin_clubs'),
     path('club/<int:pk>/finances/<type>/detail/', fin_details, name='fin_details'),
+    path('withdrawal/', withdrawal, name='withdrawal'),
+    path('refill/', refill, name='refill'),
 
     path('club/<int:pk>/donation/', donat, name='donat'),
     path('club/<int:pk>/events/', events, name='events'),
+
     ]
 

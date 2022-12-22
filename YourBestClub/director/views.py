@@ -185,7 +185,7 @@ def club_add(request):
             form.instance.director = request.user.director
             club = form.save()
             messages.success(request, 'Клуб добавлен!')
-            return redirect('detail', user_type='director', pk=request.user.director.pk)
+            return redirect('detail', pk=request.user.director.pk)
         else:
             for field in form.errors:
                 error = form.errors[field].as_text()
@@ -521,6 +521,7 @@ def student_add(request, pk, pk_group):
             if form.is_valid():
                 form.save(commit=False)
                 form.instance.group = group
+                form.instance.is_active = True
                 reg_user = form.save()
                 messages.success(request, 'Ученик успешно добавлен!')
                 return redirect('student_detail', pk=club.pk, pk_group=group.pk, pk_student=reg_user.pk)
@@ -609,17 +610,31 @@ def student_delete_confirm(request, pk, pk_group, pk_student):
         student = Student.objects.get(pk=pk_student)
         student.is_active = False
         student.no_active_at = timezone.now()
+        student.is_deleted = True
+        student.is_deleted_at = timezone.now()
         student.save()
         return redirect('students', pk=group.club.pk, pk_group=pk_group)
     else:
         return redirect('403Forbidden')
 
-    # -------------------------------------- РАСПИСАНИЕ. ДОБАВИТЬ УРОК  -----------------------------
+
+# -------------------------------------- РАСПИСАНИЕ. ДОБАВИТЬ УРОК  -----------------------------
+@login_required
+def lesson_type_choice(request, pk):
+    club = Club.objects.select_related('director').get(pk=pk)
+    if request.user.director == club.director:
+        return render(request, f'director/club/schedule/lesson_type_choice.html',
+                      {'title': 'Выберите тип занятия', 'club': club})
+    else:
+        return redirect('403Forbidden')
 
 
 @login_required
 def add_lesson(request, pk, pk_group):
     group = ClubGroup.objects.select_related('club').get(pk=pk_group)
+    if not group.club.trainer_set.all():
+        messages.warning(request, 'Для создания расписания необходимо добавить тренера!')
+        return redirect('trainers', pk=pk)
     if request.user.director == group.club.director:
         if request.method == 'POST':
             form = CreateLessonForm(request.POST)
@@ -705,7 +720,7 @@ def add_indiv_lesson(request, pk):
             form.fields['student'].queryset = Student.objects.filter(group__in=ClubGroup.objects.filter(club=club))
             form.fields['trainer'].queryset = Trainer.objects.filter(club=club)
 
-        return render(request, 'clubs/schedule/add_indiv.html',
+        return render(request, 'director/club/schedule/add_indiv.html',
                       {'form': form, 'club': club, 'current_date': timezone.datetime.now()})
     else:
         return redirect('403Forbidden')

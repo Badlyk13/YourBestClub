@@ -14,9 +14,12 @@ def get_participant_true(lesson_pk):
 
 
 @register.simple_tag
-def get_participant_names(lesson_pk):
+def get_participant_names(lesson_pk, short=True):
     participants = Participant.objects.filter(lesson=lesson_pk)
     students_names = ''
     for student in participants:
-        students_names += f'{student.student}' + ', '
+        if not short:
+            students_names += f'{student.student}' + ', '
+        else:
+            students_names += f'{student.student.surname} {student.student.name[0]}. {student.student.soname[0]}' + ', '
     return students_names[:-2]

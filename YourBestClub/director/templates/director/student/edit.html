@@ -66,6 +66,14 @@
             {% endfor %}
           </select>
         </p>
+        <p>
+          <label for="{{ form.is_active.id_for_label }}">{{ form.is_active.label_tag }}</label>
+          {% if student.is_active %}
+          <input type="checkbox" name="is_active" id="{{ form.is_active.id_for_label }}" checked>
+          {% else %}
+          <input type="checkbox" name="is_active" id="{{ form.is_active.id_for_label }}">
+          {% endif %}
+        </p>
         <div class="row">
           <div class="col-6 text-start">
             <a href="{% url 'student_delete' student.group.club.pk student.group.pk student.pk %}">

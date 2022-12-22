@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from director.forms import FilterFinDetailsForm
+from director.forms import FilterFinDetailsForm, WithdrawalForm
 from director.models import Payment, Club
 
 
@@ -103,11 +103,51 @@ def fin_details(request, pk, type):
                     _type = 'Личные'
                     payments = Payment.objects.filter(club__in=user.club_set.all(), amount__lt=0, is_personal=True)
         form = FilterFinDetailsForm()
-
-
         return render(request, 'director/finances/f_club_detail.html', {'title': f'Детализация финансов',
                                                                         'director': request.user.director,
                                                                         'payments': payments, 'form': form,
                                                                         'today': today, 'start_date': start_date,
                                                                         'type': _type})
 
+
+def withdrawal(request):
+    try:
+        user = request.user.director
+    except:
+        return redirect('403Forbidden')
+
+    if user:
+        if request.method == 'POST':
+            form = WithdrawalForm(request.POST)
+            if form.is_valid():
+                amount = form.cleaned_data.get('amount')
+                card = form.cleaned_data.get('card')
+                payment = Payment.objects.create(amount=-amount, user=request.user, assignment='Вывод')
+                # отправка в бот Юрию
+                # broadcast([recipient.tgID, ], mes_data)
+                messages.success(request, f'Заявка на вывод {amount}₽ успешно оформлена!')
+                return redirect('detail', pk=user.pk)
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error)
+        else:
+            form = WithdrawalForm()
+            history = Payment.objects.filter(user=request.user, assignment='Вывод')
+            balance = Payment.objects.filter(user=request.user, is_personal=False).aggregate(Sum('amount'))['amount__sum']
+            return render(request, 'director/finances/withdrawal.html', {'title': 'Вывод',
+                                                                         'director': request.user.director,
+                                                                         'balance': balance,
+                                                                         'form': form, 'history': history})
+
+
+def refill(request):
+    try:
+        user = request.user.director
+    except:
+        return redirect('403Forbidden')
+    if user:
+        return render(request, 'director/finances/refill.html',
+                      {'title': 'Пополнение баланса', 'director': user})
+    else:
+        return redirect('403Forbidden')

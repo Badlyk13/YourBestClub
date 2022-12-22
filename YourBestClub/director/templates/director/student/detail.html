@@ -8,6 +8,15 @@
 {% endblock %}
 
 {% block content %}
+{% if not student.is_active %}
+<div class="row">
+    <div class="col-12 mt-1 mb-1">
+        <h3><i class="bi bi-exclamation-diamond" style="color: #c93c11"></i> <u>Студент не активен!</u></h3>
+    </div>
+</div>
+{% endif %}
+
+
 <div class="row">
     <div class="col-12 mt-1 mb-1">
         <h5>Группа: <a href="{% url 'group_detail' student.group.club.pk student.group.pk %}" class="black">{{ student.group.title }}</a></h5>
@@ -17,14 +26,11 @@
   <div class="col-12 p-3">
     <p>Тренировок в группе: {{ qty_lesson }}</p>
     <p>Тренировок индивидуально: {{ qty_lesson_ind }}</p>
-    <p>Ставка за групповое занятие: {{ trainer.cost }}₽</p>
-    <p>Ставка за индив. занятие: {{ trainer.cost_individual }}₽</p>
-    <p>Стоимость индив. для ученика: {{ trainer.cost_for_student }}₽</p>
   </div>
 </div>
 <div class="row">
   <div class="col-12 p-3">
-  <p>Группы: Список названий групп-ссылки</p>
+    <p class="second"><a class='black' href="{% url 'add_indiv_lesson' student.group.club.pk %}"><i class="bi bi-plus-square"></i> Добавить индивидуальное занятие</a></p>
   </div>
 </div>
 {% endblock %}

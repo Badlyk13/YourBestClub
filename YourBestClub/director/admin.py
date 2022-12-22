@@ -34,7 +34,7 @@ class TrainerAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'surname', 'name', 'soname', 'agent_name', 'agent_phone', 'group', 'get_avatar', 'tgID', 'is_active')
+    list_display = ('id', 'surname', 'name', 'soname', 'agent_name', 'agent_phone', 'group', 'get_avatar', 'tgID', 'is_active', 'no_active_at', 'is_deleted')
     search_fields = ('id', 'surname', 'name', 'soname', 'agent_name', 'agent_phone', 'birthday', 'tgID', 'is_active')
 
     def get_avatar(self, obj):
@@ -88,11 +88,11 @@ class LessonAdmin(admin.ModelAdmin):
 
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ('id', 'lesson', 'get_students', 'status')
+    list_display = ('id', 'lesson', 'student', 'status')
     search_fields = ('id', 'lesson', 'student', 'status')
 
-    def get_students(self, obj):
-        return "\n".join([p.student for p in obj.student.all()])
+    # def get_students(self, obj):
+    #     return "\n".join([p.student for p in obj.student.all()])
 
 
 @admin.register(ClubSubscription)

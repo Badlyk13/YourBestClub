@@ -1,5 +1,6 @@
 import csv
 
+from django.contrib import messages
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -185,8 +186,8 @@ def stat_registered_students(request, pk, year):
             while cur_year <= timezone.now().year:
                 qty_students = students.filter(registered_at__year=cur_year).count()
                 total = students.filter(registered_at__year__lte=cur_year).count()
-                qty_leave = students.filter(no_active_at__year=cur_year).count()
-                qty_leave_total = students.filter(no_active_at__year__lte=cur_year).count()
+                qty_leave = students.filter(is_deleted_at__year=cur_year).count()
+                qty_leave_total = students.filter(is_deleted_at__year__lte=cur_year).count()
                 data_title.append(cur_year)
                 data_qty_students.append(qty_students)
                 data_total.append(total-qty_leave_total)
@@ -198,8 +199,8 @@ def stat_registered_students(request, pk, year):
             for i in range(1, 13):
                 qty_students = students.filter(registered_at__year=year, registered_at__month=i).count()
                 total = students.filter(registered_at__year=year, registered_at__month__lte=i).count()
-                qty_leave = students.filter(no_active_at__year=year, no_active_at__month=i).count()
-                qty_leave_total = students.filter(no_active_at__year__lte=year, no_active_at__month__lte=i).count()
+                qty_leave = students.filter(is_deleted_at__year=year, is_deleted_at__month=i).count()
+                qty_leave_total = students.filter(is_deleted_at__year__lte=year, is_deleted_at__month__lte=i).count()
                 data_qty_students.append(qty_students)
                 data_total.append(total-qty_leave_total)
                 data_qty_leave.append(qty_leave)
@@ -221,26 +222,30 @@ def stat_group_students(request, pk, pk_group, year):
         students = Student.objects.filter(group__pk=pk_group)
         data_title, data_qty_students, data_total, data_max_in_lesson, data_qty_leave = [], [], [], [], []
         if year == 0:
-            min_year = students.order_by('registered_at')[0].registered_at.year
-            cur_year = min_year
-            while cur_year <= timezone.now().year:
-                qty_students = students.filter(registered_at__year=cur_year).count()
-                total = students.filter(registered_at__year__lte=cur_year).count()
-                qty_leave = students.filter(no_active_at__year=cur_year).count()
-                qty_leave_total = students.filter(no_active_at__year__lte=cur_year).count()
-                data_title.append(cur_year)
-                data_qty_students.append(qty_students)
-                data_total.append(total-qty_leave_total)
-                data_qty_leave.append(qty_leave)
-                cur_year += 1
+            try:
+                min_year = students.order_by('registered_at')[0].registered_at.year
+                cur_year = min_year
+                while cur_year <= timezone.now().year:
+                    qty_students = students.filter(registered_at__year=cur_year).count()
+                    total = students.filter(registered_at__year__lte=cur_year).count()
+                    qty_leave = students.filter(is_deleted_at__year=cur_year).count()
+                    qty_leave_total = students.filter(is_deleted_at__year__lte=cur_year).count()
+                    data_title.append(cur_year)
+                    data_qty_students.append(qty_students)
+                    data_total.append(total-qty_leave_total)
+                    data_qty_leave.append(qty_leave)
+                    cur_year += 1
+            except IndexError:
+                messages.warning(request, 'Статистики для этой группы еще нет! Но она обязательно появится...')
+                return redirect('group_detail', pk=pk, pk_group=pk_group)
 
         else:
             data_title = MONTH
             for i in range(1, 13):
                 qty_students = students.filter(registered_at__year=year, registered_at__month=i).count()
                 total = students.filter(registered_at__year=year, registered_at__month__lte=i).count()
-                qty_leave = students.filter(no_active_at__year=year, no_active_at__month=i).count()
-                qty_leave_total = students.filter(no_active_at__year__lte=year, no_active_at__month__lte=i).count()
+                qty_leave = students.filter(is_deleted_at__year=year, is_deleted_at__month=i).count()
+                qty_leave_total = students.filter(is_deleted_at__year__lte=year, is_deleted_at__month__lte=i).count()
                 data_qty_students.append(qty_students)
                 data_total.append(total-qty_leave_total)
                 data_qty_leave.append(qty_leave)

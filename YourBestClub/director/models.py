@@ -205,6 +205,8 @@ class Student(models.Model):
     registered_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата регистрации')
     is_active = models.BooleanField(default=True, verbose_name='Активен')
     no_active_at = models.DateTimeField(blank=True, null=True, verbose_name='Дата отключения')
+    is_deleted = models.BooleanField(default=False, verbose_name='Удален')
+    is_deleted_at = models.DateTimeField(blank=True, null=True, verbose_name='Дата удаления')
 
     def __str__(self):
         return f'{self.surname} {self.name} {self.soname}'
@@ -213,6 +215,11 @@ class Student(models.Model):
         return reverse('student_detail', kwargs={'pk': self.pk})
 
     def save(self, *args, **kwargs):
+        if self.is_active:
+            self.no_active_at = None
+        else:
+            self.no_active_at = timezone.now()
+
         super(Student, self).save(*args, **kwargs)
         try:
             filepath = self.avatar.path
@@ -233,10 +240,15 @@ class Student(models.Model):
                 for lesson in lessons:
                     participant = Participant.objects.create(lesson=lesson, student=self)
 
+        if not self.is_active:
+            participant = Participant.objects.filter(student=self, lesson__dt__gte=timezone.now())
+            participant.delete()
+
+
     class Meta:
         verbose_name = 'Ученик(а)'
         verbose_name_plural = 'Ученики'
-        ordering = ['surname']
+        ordering = ['-is_active', 'surname']
         unique_together = (('surname', 'name', 'soname', 'agent_phone'),)
 
 
