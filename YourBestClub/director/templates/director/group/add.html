@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+    <div class="col-12 col-md-8 mt-1 mb-1 text-center">
         <h3>{{ title }}</h3>
     </div>
 </div>
 <div class="row">
-    <div class="col-12 col-md-8 ps-4">
+    <div class="col-12 col-md-8 ps-3">
       <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="form-group">
@@ -22,7 +22,14 @@
           <input type="text" name="description" class="form-control" maxlength="300" value="{{ form.description.value|default_if_none:'' }}" required id="{{ form.description.id_for_label }}">
         </p>
         <p>
-          <label for="{{ form.lesson_price.id_for_label }}">{{ form.lesson_price.label_tag }}</label>
+          <label for="{{ form.lesson_price.id_for_label }}">{{ form.lesson_price.label_tag }}
+            <small><a class="black" data-bs-toggle="collapse" href="#collapseExample0" role="button" aria-expanded="false" aria-controls="collapseExample0">💡 Подсказка</a></small>
+          </label>
+          <div class="collapse" id="collapseExample0">
+            <div class="form-text mb-2" style="color: #c5c5c5">
+              <i><small>Стоимость 1 занятия в группе для ученика в рублях. Например: 450</small></i>
+            </div>
+          </div>
           <input type="number" placeholder="Укажите цифру в руб. Например: 450" value="{{ form.lesson_price.value }}" name="lesson_price" class="form-control" maxlength="10" required id="{{ form.lesson_price.id_for_label }}">
         </p>
         <p>
@@ -37,15 +44,17 @@
           <input type="number" name="notification" placeholder="За сколько минут присылать уведомление. Например: 180" value="{{ form.notification.value }}" class="form-control" maxlength="10" required id="{{ form.notification.id_for_label }}">
         </p>
         <p>
-          <label for="{{ form.subscription.id_for_label }}">{{ form.subscription.label_tag }}</label>
+          <label for="{{ form.subscription.id_for_label }}">{{ form.subscription.label_tag }}
+          </label>
           <select class="form-select" multiple name="subscription" id="{{ form.subscription.id_for_label }}" aria-describedby="trainerHelpBlock">
             {% for gr in form.subscription %}
               <option value="{{ gr.data.value }}">{{ gr.data.label }}</option>
             {% endfor %}
           </select>
           <div id="trainerHelpBlock" class="form-text d-none d-sm-block" style="color: #c5c5c5">
-            <i><small>* Для выбора вариантов используйте CTRL</small></i>
+            <i><small>* Для выбора вариантов используйте CTRL &nbsp;&nbsp;&nbsp;<a class="black" href="{% url 'subscription_add' club.pk %}"><i class="bi bi-plus-square"></i> Добавить абонемент</a></small></i>
           </div>
+
         </p>
         <p>
           <ul class="list-inline mb-0">
@@ -60,13 +69,17 @@
             </li>
           </ul>
         </p>
-        <p align="right">
-          <button class="save-button" type="submit">Сохранить</button>
-        </p>
+        <div class="row">
+          <div class="col">
+            <button class='back-button' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</button>
+          </div>
+          <div class="col text-end">
+            <button class="save-button" type="submit">Сохранить</button>
+          </div>
+        </div>
       </div>
     </form>
     </div>
-
     <div class="col-3"></div>
 </div>
     <script>

@@ -9,7 +9,7 @@ from director.statistic import *
 
 urlpatterns = [
     path('403Forbidden/', forbidden_403, name='403Forbidden'),
-    path('', user_login, name='login'),
+    path('', index, name='index'),
     path('login/', user_login, name='login'),
     path('logout/', LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL), name='logout'),
     path('choice-type/', choice_type, name='choice_type'),
@@ -17,24 +17,32 @@ urlpatterns = [
     path('change_password/<slug:user_type>/<int:pk>/', change_password, name='change_password'),
     path('set_password/<slug:user_type>/<int:pk>/', set_password, name='set_password'),
 
+
+    # ============================== КЛУБ =============================
     path('club/add-club/', club_add, name='club_add'),
     path('club/<int:pk>/detail/', club_detail, name='club_detail'),
     path('club/<int:pk>/edit/', club_edit, name='club_edit'),
     path('club/<int:pk>/delete/', club_delete, name='club_delete'),
     path('club/<int:pk>/delete-confirm/', club_delete_confirm, name='club_delete_confirm'),
 
+
+    # ============================== ДИРЕКТОР =============================
     path('add-details/director/', add_details, name='add_details'),
     path('director/<int:pk>/detail', director_detail, name='detail'),
     path('director/<int:pk>/edit_details', director_edit_details, name='edit_details'),
     path('director/<int:pk>/delete/', director_delete, name='director_delete'),
     path('director/<int:pk>/delete-confirm/', director_delete_confirm, name='director_delete_confirm'),
 
+
+    # ============================== АБОНЕМЕНТЫ =============================
     path('club/<int:pk>/subscription-add/', subscription_add, name='subscription_add'),
     path('club/<int:pk>/subscription-list/', subscription_list, name='subscription_list'),
     path('club/<int:pk>/subscription/<int:pk_subscription>/edit', subscription_edit, name='subscription_edit'),
     path('club/<int:pk>/subscription/<int:pk_subscription>/delete-confirm/', subscription_delete_confirm,
          name='subscription_delete_confirm'),
 
+
+    # ============================== ГРУППЫ =============================
     path('club/<int:pk>/group-add/', group_add, name='group_add'),
     path('club/<int:pk>/group/<int:pk_group>/detail', group_detail, name='group_detail'),
     # path('club/<int:pk>/group/<int:pk_group>/statistic', group_statistic, name='group_statistic'),
@@ -44,6 +52,8 @@ urlpatterns = [
     path('club/<int:pk>/group/<int:pk_group>/delete-confirm/', group_delete_confirm,
          name='group_delete_confirm'),
 
+
+    # ============================== ТРЕНЕР =============================
     path('club/<int:pk>/trainer-add/', trainer_add, name='trainer_add'),
     path('club/<int:pk>/trainer/<int:pk_trainer>/detail', trainer_detail, name='trainer_detail'),
     path('club/<int:pk>/trainer/<int:pk_trainer>/edit', trainer_edit, name='trainer_edit'),
@@ -52,6 +62,8 @@ urlpatterns = [
     path('club/<int:pk>/trainer/<int:pk_trainer>/delete-confirm/', trainer_delete_confirm,
          name='trainer_delete_confirm'),
 
+
+    # ============================== УЧЕНИКИ =============================
     path('club/<int:pk>/group/<int:pk_group>/student-add/', student_add, name='student_add'),
     path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/detail', student_detail, name='student_detail'),
     path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/edit', student_edit, name='student_edit'),
@@ -60,6 +72,8 @@ urlpatterns = [
     path('club/<int:pk>/group/<int:pk_group>/student/<int:pk_student>/delete-confirm/', student_delete_confirm,
          name='student_delete_confirm'),
 
+
+    # ============================== РАСПИСАНИЕ =============================
     path('club/<int:pk>/schedule/', club_schedule, name='club_schedule'),
     path('club/<int:pk>/group/<int:pk_group>/schedule/', group_schedule, name='group_schedule'),
 
@@ -78,11 +92,13 @@ urlpatterns = [
     path('club/<int:pk>/lesson/<pk_lesson>/participant/<int:pk_participant>/change_status_true/',
          change_status_true, name='change_status_true'),
 
+
+    # ============================== РАССЫЛКА =============================
     path('club/<int:pk>/mailing/', club_mailing, name='club_mailing'),
     path('personal-mailing/<int:rec_type>/<int:pk_rec>/', personal_mailing, name='personal_mailing'),
 
 
-    # ============================== STATISTICS =============================
+    # ============================== СТАТИСТИКА =============================
     path('club/<int:pk>/statistic/', stat_home, name='stat_home'),
     path('club/<int:pk>/statistic/<int:period>/', stat_club_finances, name='stat_club_finances'),
     path('club/<int:pk>/statistic/<int:year>/<int:month>/', stat_club_finances_month, name='stat_club_finances_month'),
@@ -95,8 +111,11 @@ urlpatterns = [
     path('club/<int:pk>/statistic/students/<int:year>/', stat_registered_students, name='stat_registered_students'),
     path('club/<int:pk>/group/<int:pk_group>/statistic/<int:year>/', stat_group_students, name='stat_group_students'),
 
-    # ============================== FINANCES =============================
+
+
+    # ============================== ФИНАНСЫ =============================
     path('club/<int:pk>/finances/', fin_clubs, name='fin_clubs'),
+    path('club/<int:pk>/finances/add_personal_payment', add_personal_payment, name='add_personal_payment'),
     path('club/<int:pk>/finances/<type>/detail/', fin_details, name='fin_details'),
     path('withdrawal/', withdrawal, name='withdrawal'),
     path('refill/', refill, name='refill'),

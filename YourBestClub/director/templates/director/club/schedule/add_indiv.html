@@ -10,7 +10,7 @@
 {% block content %}
 
 <div class="row">
-  <div class="col-12 mt-3 mb-3 text-center">
+  <div class="col-12 mt-1 mb-1 text-center">
     <h3>Добавление занятия</h3>
   </div>
 </div>
@@ -26,7 +26,7 @@
 
         <p>
           <label for="{{ form.student.id_for_label }}">{{ form.student.label_tag }}</label>
-          <select class="form-select" multiple name="student" id="{{ form.student.id_for_label }}" required>
+          <select class="form-select" multiple name="student" id="{{ form.student.id_for_label }}" required size="10">
             {% for student in form.student %}
               <option value="{{ student.data.value }}">{{ student.data.label }}</option>
             {% endfor %}
@@ -46,11 +46,16 @@
           </select>
         </p>
       </div>
-      <div class="row">
-        <div class="col-12 text-end">
-          <button class="save-button" type="submit">Сохранить</button>
+        <!--     Кнопки сохранить/удалить  -->
+        <div class="row">
+          <div class="col">
+            <button class='back-button' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</button>
+          </div>
+          <div class="col text-end">
+            <button class="save-button" type="submit">Добавить</button>
+          </div>
         </div>
-      </div>
+        <!--     Конец Кнопки сохранить/удалить  -->
     </form>
   </div>
 </div>

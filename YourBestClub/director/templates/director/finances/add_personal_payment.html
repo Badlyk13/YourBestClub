@@ -16,22 +16,22 @@
 <div class="row">
   <div class="col-12 mb-3">
     <div class="row px-2">
-      <div class="col-12 mt-3 mb-3">
+      <div class="col-12">
         <form method="post" enctype="multipart/form-data">  {% csrf_token %}
           <div class="row">
             <div class="col-12">
               <p>
               <label for="{{ form.amount.id_for_label }}">{{ form.amount.label_tag }}</label>
-              <input type="number" class="form-control" placeholder="макс. {{ balance|default_if_none:'0' }}" max="{{ balance }}" name="amount" id="{{ form.amount.id_for_label }}">
+              <input type="number" class="form-control" placeholder="Укажите сумму в руб." max="{{ balance }}" name="amount" id="{{ form.amount.id_for_label }}">
               </p>
               <p>
-              <label for="{{ form.card.id_for_label }}">{{ form.card.label_tag }}</label>
-              <input type="text" class="form-control" placeholder="1234123412341234"  name="card" id="{{ form.card.id_for_label }}">
+              <label for="{{ form.assignment.id_for_label }}">{{ form.assignment.label_tag }}</label>
+              <input type="text" class="form-control" placeholder="Назначение расходов" name="assignment" id="{{ form.assignment.id_for_label }}">
               </p>
             </div>
           </div>
-          <div class="col-12 text-end">
-            <button class="save-button" type="submit">Вывести</button>
+          <div class="col-12 mb-3 text-end">
+            <button class="save-button" type="submit">Добавить</button>
           </div>
         </form>
       </div>
@@ -39,20 +39,26 @@
     <div class="row px-2">
       <div class="col-12">
         <div class="row border rounded-1" style="border-color: #c5c5c5!important">
-          <div class="col-8 mt-1">
+          <div class="col-5 mt-1">
             <h6>Дата</h6>
           </div>
-          <div class="col-4 mt-1 text-center">
+          <div class="col-3 mt-1 text-center">
             <h6>Сумма</h6>
+          </div>
+            <div class="col-4 mt-1 text-center">
+            <h6>Назначение</h6>
           </div>
         </div>
         {% for payment in history %}
         <div class="row border rounded-1" style="border-color: #c5c5c5!important">
-          <div class="col-8 mt-1">
+          <div class="col-5 mt-1">
             <small>{{ payment.created_at }}</small>
           </div>
-          <div class="col-4 mt-1 text-center">
+          <div class="col-3 mt-1 text-center">
             <small>{{ payment.amount }}₽</small>
+          </div>
+          <div class="col-4 mt-1 text-center">
+            <small>{{ payment.assignment }}</small>
           </div>
         </div>
         {% endfor %}

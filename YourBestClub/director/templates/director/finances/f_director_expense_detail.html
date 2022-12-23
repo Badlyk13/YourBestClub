@@ -11,7 +11,7 @@
 
 
 <div class="row">
-  <div class="col-12 mb-3">
+  <div class="col-12 mb-1 mt-1">
     {% if club %}
     <h4><a class="black" href="{% url 'detail_club' club.pk %}">{{ club.title }}</a></h4>
     {% else %}
@@ -36,7 +36,7 @@
             {{ item.amount }}
           </div>
           <div class="col-5" style="border-right: 1px solid;">
-            {{ item.pay_system }}
+            {{ item.assignment }}
           </div>
         </div>
         {% endfor %}
@@ -52,7 +52,7 @@
             {{ item.amount }}
           </div>
           <div class="col-5" style="border-right: 1px solid;">
-            {{ item.pay_system }}
+            {{ item.assignment }}
           </div>
         </div>
         {% endfor %}
@@ -67,7 +67,7 @@
             {{ item.amount }}
           </div>
           <div class="col-5" style="border-right: 1px solid;">
-            {{ item.pay_system }}
+            {{ item.assignment }}
           </div>
         </div>
         {% endfor %}
@@ -82,7 +82,7 @@
             {{ item.amount }}
           </div>
           <div class="col-5" style="border-right: 1px solid;">
-            {{ item.pay_system }}
+            {{ item.assignment }}
           </div>
         </div>
         {% endfor %}

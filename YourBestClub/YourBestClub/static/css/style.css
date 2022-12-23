@@ -219,8 +219,22 @@ label{
   box-shadow: 0 0px 20px rgba(0, 0, 0, 1.4);
 }
 
+.back-button {
+  background-color: transparent;
+  text-shadow: 0px 0px 7px black;
+  text-align: center;
+  color: #c5c5c5;
+  width: 130px;
+  line-height: 40px;
+  margin: 20px 10px;
+  border-radius: 45px;
+  border: 0px;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 1.4);
+}
+
 .save-button:hover,
-.delete-button:hover {
+.delete-button:hover,
+.back-button:hover {
   color: #fff;
   text-shadow: 0px 0px 10px white;
   box-shadow: 0 0px 40px rgba(0, 0, 0, 1.4);
@@ -240,6 +254,19 @@ label{
   background-color: #c93c11;
   box-shadow: 0 0px 30px rgba(0, 0, 0, 1.4);
   transform: translateY(-5px)
+}
+
+.back-button {
+  background-color: transparent;
+  text-shadow: 0px 0px 7px black;
+  text-align: center;
+  color: #c5c5c5;
+  width: 130px;
+  line-height: 40px;
+  margin: 20px 10px;
+  border-radius: 45px;
+  border: 0px;
+  box-shadow: 0 0px 20px rgba(0, 0, 0, 1.4);
 }
 
 /* Изображения */

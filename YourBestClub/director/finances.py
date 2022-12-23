@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from director.forms import FilterFinDetailsForm, WithdrawalForm
+from director.forms import FilterFinDetailsForm, WithdrawalForm, AddPersonalPaymentForm
 from director.models import Payment, Club
 
 
@@ -135,7 +135,7 @@ def withdrawal(request):
             form = WithdrawalForm()
             history = Payment.objects.filter(user=request.user, assignment='Вывод')
             balance = Payment.objects.filter(user=request.user, is_personal=False).aggregate(Sum('amount'))['amount__sum']
-            return render(request, 'director/finances/withdrawal.html', {'title': 'Вывод',
+            return render(request, 'director/finances/withdrawal.html', {'title': 'Вывод средств',
                                                                          'director': request.user.director,
                                                                          'balance': balance,
                                                                          'form': form, 'history': history})
@@ -149,5 +149,52 @@ def refill(request):
     if user:
         return render(request, 'director/finances/refill.html',
                       {'title': 'Пополнение баланса', 'director': user})
+    else:
+        return redirect('403Forbidden')
+
+
+def add_personal_payment(request, pk):
+    try:
+        user = request.user.director
+    except:
+        return redirect('403Forbidden')
+
+    if user:
+        if request.method == 'POST':
+            form = AddPersonalPaymentForm(request.POST)
+            if form.is_valid():
+                amount = form.cleaned_data.get('amount')
+                assignment = form.cleaned_data.get('assignment')
+                if pk > 0:
+                    club = Club.objects.get(pk=pk)
+                    payment = Payment.objects.create(amount=-amount, user=request.user, assignment=assignment,
+                                                     is_personal=True, club=club)
+                    messages.success(request, f'Личные расходы добавлены!')
+                    return redirect('fin_clubs', pk=pk)
+                else:
+                    payment = Payment.objects.create(amount=-amount, user=request.user, assignment=assignment,
+                                                     is_personal=True)
+                    messages.success(request, f'Личные расходы добавлены!')
+                    return redirect('fin_clubs', pk=0)
+
+            else:
+                for field in form.errors:
+                    error = form.errors[field].as_text()
+                    messages.error(request, error)
+        else:
+            form = AddPersonalPaymentForm()
+            if pk > 0:
+                club = Club.objects.get(pk=pk)
+                history = Payment.objects.filter(user=request.user, is_personal=True, club__pk=pk)
+                return render(request, 'director/finances/add_personal_payment.html', {'title': 'Добавить расходы клуба',
+                                                                                       'club': club,
+                                                                                       'history': history,
+                                                                                       'form': form})
+            else:
+                history = Payment.objects.filter(user=request.user, is_personal=True)
+                return render(request, 'director/finances/add_personal_payment.html', {'title': 'Добавить личные расходы',
+                                                                                       'director': request.user.director,
+                                                                                       'history': history,
+                                                                                       'form': form})
     else:
         return redirect('403Forbidden')

@@ -15,10 +15,12 @@
       {% get_balance director.pk as balance %}
       <div class="col-12 text-center pt-1"><h5> Баланс: {{ balance|default_if_none:"0" }}₽</h5></div>
       <div class="col text-center pt-0">
+        {% if director.tgID %}
         <div class="row">
           <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{% url 'withdrawal' %}"> Вывод </a>|</small></div>
           <div class="col-12 col-md-6 text-center"><small>|<a class="revers" href="{% url 'refill' %}"> Пополнение </a>|</small></div>
         </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -112,7 +114,7 @@
   </div>
   <div class="col-6 col-md-12 text-center">
     <div class="row">
-      <div class="col-12 text-center pt-3"><h3>{{ group.title }}</h3></div>
+      <div class="col-12 text-center pt-3"><h3>{{ group.title }}, <a class="black" href="{% url 'club_detail' group.club.pk %}">{{ group.club.title }}</a></h3></div>
       <div class="col-12 text-center"><i><small> {{ group.description }}</small></i></div>
 
       <div class="col text-center pt-2">
@@ -125,7 +127,7 @@
       {% get_st_balance student.pk as balance %}
       <div class="col-12 text-center pt-3"><h5> Баланс: {{ balance|default_if_none:"0" }}₽</h5></div>
 
-                  {% endcomment %}
+      {% endcomment %}
     </div>
   </div>
   {% endif %}

@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-12 col-md-8 mt-3 mb-3 text-center">
+    <div class="col-12 col-md-8 mt-1 mb-1 text-center">
         <h3>{{ title }}</h3>
     </div>
 </div>
@@ -25,7 +25,7 @@
               </span>
           </div>
           <p><br>
-            Не знаешь логин и пароль? Самое время <a href="{% url 'choice_type' %}" class="black">зарегистрироваться!</a>
+            Не знаешь логин и пароль? Самое время <a href="{% url 'register' 'director' %}" class="black">зарегистрироваться!</a>
           </p>
         </div>
       </form>

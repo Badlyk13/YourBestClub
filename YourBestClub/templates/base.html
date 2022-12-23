@@ -46,7 +46,9 @@
       <div class="row mt-3">
         {% if not '/registration/' in request.get_full_path %}
           {% if not '/choice-type/' in request.get_full_path %}
-            {% include 'inc/_news.html' %}
+		        {% if not '/login/' in request.get_full_path %}
+				      {% include 'inc/_news.html' %}
+			      {% endif %}
           {% endif %}
         {% endif %}
       </div>

@@ -10,7 +10,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-12 mt-3 mb-3 text-center">
+    <div class="col-12 mt-1 mb-1 text-center">
       {% if clubs.all.count == 1 %}
         <h3>Расписание {{ clubs.all.first }}</h3>
       {% else %}
@@ -72,11 +72,13 @@
       {% endif %}
     {% endfor %}
   </div>
+  <p class="text-end">
   {% if clubs.all.count == 1 %}
-  <p class="text-end"><a class='back' href="{% url 'club_detail' clubs.all.first.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
+  <button class='back-button' onclick="location.href='{% url 'club_detail' clubs.all.first.pk %}';"><i class="bi bi-arrow-return-left"></i> Назад</button>
   {% else %}
-  <p class="text-end"><a class='back' href="{% url 'detail' clubs.all.first.director.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
 
+  <button class='back-button' onclick="location.href='{% url 'detail' clubs.all.first.director.pk %}';" ><i class="bi bi-arrow-return-left"></i> Назад</button>
+  </p>
   {% endif %}
 
 </div>

@@ -8,7 +8,11 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="row">
+  <div class="col-12 mt-1 mb-1 text-center">
+    <h3>{{ title }}</h3>
+  </div>
+</div>
 <div class="row">
   <div class="col-12">
     <form method="post" enctype="multipart/form-data">
@@ -38,12 +42,15 @@
           <input class="second" type="file" name="image" accept="image/*" id="id_image">
           <br><br>
           <label class="second" for="id_image"></label>
-          <img id='blah' class="img-fluid rounded mysize-small" style="height: 200px"/>
+          <img id='blah' class="avatar"/>
         </p>
 
         <!--     Кнопки сохранить/удалить  -->
         <div class="row">
-          <div class="col-12 text-end">
+          <div class="col">
+            <button class='back-button' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</button>
+          </div>
+          <div class="col text-end">
             <button class="save-button" type="submit">Отправить</button>
           </div>
         </div>
@@ -51,18 +58,6 @@
 
       </div>
     </form>
-
-
-    <!--     Конец 4 строчка кнопок  -->
-
-    <div class="row">
-      <div class="col-12 text-end">
-        <p class="card-text d-block d-sm-none text-end">
-          <a class='mylinks' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</a>
-        </p>
-      </div>
-    </div>
-
   </div>
 </div>
       <script>

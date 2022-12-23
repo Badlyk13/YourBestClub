@@ -1,5 +1,4 @@
 {% load static %}
-            {% comment %}
 
   <nav class="navbar fixed-bottom">
     <div class="container-fluid p-0">
@@ -9,13 +8,17 @@
             <a href="{% url 'club_schedule' 0 %}"><i class="bi bi-list-stars" style="font-size: 2.3rem;"></i></a>
           </li>
           <li class="list-inline-item">
-            <a href="{% url 'club_finances' 0 %}"><i class="bi bi-wallet-fill" style="font-size: 2.3rem;"></i></a>
+            <a href="{% url 'fin_clubs' 0 %}"><i class="bi bi-wallet-fill" style="font-size: 2.3rem;"></i></a>
           </li>
           <li class="list-inline-item">
-            <a href="{% url 'office' %}"><i class="bi bi-person-lines-fill" style="font-size: 2.3rem;"></i></a>
+            {% if request.user.director.pk %}
+              <a href="{% url 'detail' request.user.director.pk %}"><i class="bi bi-person-lines-fill" style="font-size: 2.3rem;"></i></a>
+            {% else %}
+              <a href="#"><i class="bi bi-person-lines-fill" style="font-size: 2.3rem;"></i></a>
+            {% endif %}
           </li>
           <li class="list-inline-item">
-            <a href="{% url 'news' %}"><i class="bi bi-newspaper" style="font-size: 2.3rem;"></i></a>
+            <a href="{% url 'last_news' %}"><i class="bi bi-newspaper" style="font-size: 2.3rem;"></i></a>
           </li>
           <li class="list-inline-item">
             {% if request.user.is_authenticated %}
@@ -28,4 +31,3 @@
       </p>
     </div>
   </nav>
-            {% endcomment %}

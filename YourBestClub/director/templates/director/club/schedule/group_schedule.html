@@ -10,7 +10,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-12 mt-3 mb-3 text-center">
+    <div class="col-12 mt-1 mb-1 text-center">
       {% if groups.all.count == 1 %}
         <h3>Расписание {{ groups.all.first }} ({{ groups.all.first.student_set.all.count }} уч.)</h3>
       {% else %}
@@ -63,10 +63,11 @@
           {% endif %}
       {% endfor %}
   </div>
+      <p class="text-end">
       {% if groups.all.count == 1 %}
-        <p class="text-end"><a class='back' href="{% url 'students' club.pk groups.all.first.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
+      <button class='back-button' onclick="location.href='{% url 'students' club.pk groups.all.first.pk %}';" ><i class="bi bi-arrow-return-left"></i> Назад</button>
       {% else %}
-        <p class="text-end"><a class='back' href="{% url 'detail_club' club.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
+        <button class='back-button' onclick="location.href='{% url 'detail_club' club.pk %}';" ><i class="bi bi-arrow-return-left"></i> Назад</button>
       {% endif %}
 
 </div>

@@ -116,3 +116,9 @@ class FilterFinDetailsForm(forms.Form):
 class WithdrawalForm(forms.Form):
     amount = forms.IntegerField(label='Сумма')
     card = forms.CharField(max_length=25, label='Номер карты')
+
+
+class AddPersonalPaymentForm(forms.Form):
+    amount = forms.IntegerField(label='Сумма')
+    assignment = forms.CharField(max_length=150, label='Назначение')
+

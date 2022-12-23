@@ -7,16 +7,22 @@
         {% if user.director %}
           {% if user.director.tgID %}
             <li><a class="revers {{ d }}" href="{% url 'detail' user.director.pk %}">Кабинет</a></li>
-            <li><a class="revers" href="{% url 'club_schedule' 0 %}">Расписание</a></li>
-            <li><a class="revers" href="{% url 'events' 0 %}">Мероприятия</a></li>
-            <li><a class="revers" href="{% url 'last_news' %}">Новости</a></li>
-            <li><a class="revers" href="{% url 'fin_clubs' 0 %}">Финансы</a></li>
+            {% if user.director.club_set.all.count > 0 %}
+              <li><a class="revers" href="{% url 'club_schedule' 0 %}">Расписание</a></li>
+              <li><a class="revers" href="{% url 'events' 0 %}">Мероприятия</a></li>
+              <li><a class="revers" href="{% url 'fin_clubs' 0 %}">Финансы</a></li>
+            {% else %}
+              <li><a class="revers disabled" href="#">Расписание</a></li>
+              <li><a class="revers disabled" href="#">Статистика</a></li>
+              <li><a class="revers disabled" href="#">Финансы</a></li>
+            {% endif %}
+              <li><a class="revers" href="{% url 'last_news' %}">Новости</a></li>
           {% else %}
             <li><a class="revers disabled" href="#">Кабинет</a></li>
             <li><a class="revers disabled" href="#">Расписание</a></li>
             <li><a class="revers disabled" href="#">Статистика</a></li>
-            <li><a class="revers disabled" href="#">Новости</a></li>
             <li><a class="revers disabled" href="#">Финансы</a></li>
+            <li><a class="revers disabled" href="#">Новости</a></li>
           {% endif %}
         {% endif %}
 

@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-12 mt-1 text-center">
+    <div class="col-12 mt-1 mb-1 text-center">
         <h2>Ученики</h2>
     </div>
 </div>
@@ -38,4 +38,11 @@
     {% endif %}
   {% endfor %}
 </div>
+
+<div class="row">
+  <div class="col">
+      <button class='back-button' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</button>
+  </div>
+</div>
+
 {% endblock %}

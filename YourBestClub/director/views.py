@@ -21,6 +21,10 @@ def forbidden_403(request):
     return render(request, 'director/403_Forbidden.html')
 
 
+def index(request):
+    return redirect('login')
+
+
 def user_login(request):
     if request.method == 'POST':
         form = UserLoginForm(data=request.POST)
@@ -63,14 +67,14 @@ def register(request, user_type):
             user = form.save()
             login(request, user)
             messages.success(request, 'Шаг 1 успешно пройден!')
-            return redirect('add_details', user_type=user_type)
+            return redirect('add_details')
         else:
             for field in form.errors:
                 error = form.errors[field].as_text()
                 messages.error(request, error + ' ' + field)
     else:
         if request.user.is_authenticated:
-            return redirect(f'{user_type}_detail')
+            return redirect(f'detail', request.user.director)
         else:
             form = UserCreateForm()
     return render(request, 'director/registration/registration.html',
@@ -82,21 +86,20 @@ def add_details(request):
     form = ''
     if request.method == 'POST':
         form = DirectorForm(request.POST, request.FILES)
-
         if form.is_valid():
             form.save(commit=False)
             form.instance.user = request.user
             reg_user = form.save()
             messages.success(request, 'Шаг 2 успешно пройден! Последний шаг...')
-            return redirect('director_detail', pk=reg_user.pk)
+            return redirect('detail', pk=reg_user.pk)
         else:
             for field in form.errors:
                 error = form.errors[field].as_text()
                 messages.error(request, error + ' ' + field)
-    else:
-        form = DirectorForm()
-        return render(request, f'director/director/add.html',
-                      {'title': 'Шаг 2. Личные данные', 'form': form})
+
+    form = DirectorForm()
+    return render(request, f'director/director/add.html',
+                  {'title': 'Шаг 2. Личные данные', 'form': form})
 
 
 @login_required
@@ -385,7 +388,7 @@ def group_edit(request, pk, pk_group):
                     messages.error(request, error + ' ' + field)
         else:
             form = CreateGroupForm(instance=group)
-            # form.fields['subscription'].queryset = club.clubsubscription_set.all()
+            form.fields['subscription'].queryset = club.clubsubscription_set.all()
             return render(request, f'director/group/edit.html',
                           {'title': 'Редактирование группы', 'form': form, 'group': group})
     else:
@@ -455,9 +458,15 @@ def trainer_list(request, pk):
 def trainer_detail(request, pk, pk_trainer):
     club = Club.objects.select_related('director').get(pk=pk)
     trainer = Trainer.objects.get(pk=pk_trainer)
+    lessons = Lesson.objects.filter(trainer=trainer, is_group=True)
+    trainer_group = []
+    for lesson in lessons:
+        if lesson.group not in trainer_group:
+            trainer_group.append(lesson.group)
+
     if request.user.director == club.director:
         return render(request, 'director/trainer/detail.html',
-                      {'title': trainer, 'trainer': trainer})
+                      {'title': trainer, 'trainer': trainer, 'trainer_group': trainer_group})
     else:
         return redirect('403Forbidden')
 

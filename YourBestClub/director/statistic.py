@@ -29,20 +29,25 @@ def stat_club_finances(request, pk, period):
         expenses = Payment.objects.filter(club=club, amount__lt=0)
         data_title, data_incoming_sum, data_expenses_sum = [], [], []
         if period == 0:
-            min_year = incoming.order_by('created_at')[0].created_at.year
-            year = min_year
-            while year <= timezone.now().year:
-                incoming_sum = incoming.filter(created_at__year=year).aggregate(Sum('amount'))['amount__sum']
-                expenses_sum = expenses.filter(created_at__year=year).aggregate(Sum('amount'))['amount__sum']
-                if incoming_sum is None and expenses_sum is None:
-                    continue
-                incoming_sum = incoming_sum if incoming_sum is not None else 0
-                expenses_sum = expenses_sum if expenses_sum is not None else 0
+            try:
+                min_year = incoming.order_by('created_at')[0].created_at.year
+                year = min_year
+                while year <= timezone.now().year:
+                    incoming_sum = incoming.filter(created_at__year=year).aggregate(Sum('amount'))['amount__sum']
+                    expenses_sum = expenses.filter(created_at__year=year).aggregate(Sum('amount'))['amount__sum']
+                    if incoming_sum is None and expenses_sum is None:
+                        continue
+                    incoming_sum = incoming_sum if incoming_sum is not None else 0
+                    expenses_sum = expenses_sum if expenses_sum is not None else 0
 
-                data_title.append(year)
-                data_incoming_sum.append(incoming_sum)
-                data_expenses_sum.append(abs(expenses_sum))
-                year += 1
+                    data_title.append(year)
+                    data_incoming_sum.append(incoming_sum)
+                    data_expenses_sum.append(abs(expenses_sum))
+                    year += 1
+
+            except IndexError:
+                messages.warning(request, 'Статистики еще нет! Но она обязательно появится...')
+                return redirect('stat_home', pk=pk)
 
         if period > 2000:
             data_title = MONTH
@@ -146,16 +151,20 @@ def stat_lessons(request, pk, year):
         lessons_ind = Lesson.objects.filter(trainer__club=club, is_group=False)
         data_title, data_qty_group, data_qty_ind = [], [], []
         if year == 0:
-            min_year = lessons.order_by('dt')[0].dt.year
-            cur_year = min_year
-            while cur_year <= timezone.now().year:
-                qty_group = lessons.filter(dt__year=cur_year, is_group=True).count()
-                qty_ind = lessons_ind.filter(dt__year=cur_year).count()
-                print(qty_ind)
-                data_title.append(cur_year)
-                data_qty_group.append(qty_group)
-                data_qty_ind.append(qty_ind)
-                cur_year += 1
+            try:
+                min_year = lessons.order_by('dt')[0].dt.year
+                cur_year = min_year
+                while cur_year <= timezone.now().year:
+                    qty_group = lessons.filter(dt__year=cur_year, is_group=True).count()
+                    qty_ind = lessons_ind.filter(dt__year=cur_year).count()
+                    print(qty_ind)
+                    data_title.append(cur_year)
+                    data_qty_group.append(qty_group)
+                    data_qty_ind.append(qty_ind)
+                    cur_year += 1
+            except IndexError:
+                messages.warning(request, 'Статистики еще нет! Но она обязательно появится...')
+                return redirect('stat_home', pk=pk)
 
         else:
             data_title = MONTH
@@ -181,18 +190,22 @@ def stat_registered_students(request, pk, year):
         students = Student.objects.filter(group__in=ClubGroup.objects.filter(club=club))
         data_title, data_qty_students, data_total, data_max_in_lesson, data_qty_leave = [], [], [], [], []
         if year == 0:
-            min_year = students.order_by('registered_at')[0].registered_at.year
-            cur_year = min_year
-            while cur_year <= timezone.now().year:
-                qty_students = students.filter(registered_at__year=cur_year).count()
-                total = students.filter(registered_at__year__lte=cur_year).count()
-                qty_leave = students.filter(is_deleted_at__year=cur_year).count()
-                qty_leave_total = students.filter(is_deleted_at__year__lte=cur_year).count()
-                data_title.append(cur_year)
-                data_qty_students.append(qty_students)
-                data_total.append(total-qty_leave_total)
-                data_qty_leave.append(qty_leave)
-                cur_year += 1
+            try:
+                min_year = students.order_by('registered_at')[0].registered_at.year
+                cur_year = min_year
+                while cur_year <= timezone.now().year:
+                    qty_students = students.filter(registered_at__year=cur_year).count()
+                    total = students.filter(registered_at__year__lte=cur_year).count()
+                    qty_leave = students.filter(is_deleted_at__year=cur_year).count()
+                    qty_leave_total = students.filter(is_deleted_at__year__lte=cur_year).count()
+                    data_title.append(cur_year)
+                    data_qty_students.append(qty_students)
+                    data_total.append(total-qty_leave_total)
+                    data_qty_leave.append(qty_leave)
+                    cur_year += 1
+            except IndexError:
+                messages.warning(request, 'Статистики еще нет! Но она обязательно появится...')
+                return redirect('stat_home', pk=pk)
 
         else:
             data_title = MONTH
@@ -268,18 +281,23 @@ def stat_individuals(request, pk, year):
         trainers = Trainer.objects.filter(club=club, is_active=True)
         data_title, data_qty_ind, data_trainers, data_qty_lesson = [], [], [], []
         if year == 0:
-            min_year = lessons_ind.order_by('dt')[0].dt.year
-            cur_year = min_year
-            while cur_year <= timezone.now().year:
-                qty_ind = lessons_ind.filter(dt__year=cur_year).count()
-                data_title.append(cur_year)
-                data_qty_ind.append(qty_ind)
-                cur_year += 1
+            try:
+                min_year = lessons_ind.order_by('dt')[0].dt.year
+                cur_year = min_year
+                while cur_year <= timezone.now().year:
+                    qty_ind = lessons_ind.filter(dt__year=cur_year).count()
+                    data_title.append(cur_year)
+                    data_qty_ind.append(qty_ind)
+                    cur_year += 1
 
-            for trainer in trainers:
-                data_trainers.append(trainer.surname)
-                qty_lesson = lessons_ind.filter(trainer=trainer).count()
-                data_qty_lesson.append(qty_lesson)
+                for trainer in trainers:
+                    data_trainers.append(trainer.surname)
+                    qty_lesson = lessons_ind.filter(trainer=trainer).count()
+                    data_qty_lesson.append(qty_lesson)
+
+            except IndexError:
+                messages.warning(request, 'Статистики еще нет! Но она обязательно появится...')
+                return redirect('stat_home', pk=pk)
 
         else:
             data_title = MONTH

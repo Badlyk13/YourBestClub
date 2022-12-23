@@ -10,7 +10,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-12 mt-3 mb-3 text-center">
+    <div class="col-12 mt-1 mb-1 text-center">
       {% if lesson.group %}
       <h3>{{ lesson.dt|date:'d.m.Y H:i' }} - {{ lesson.group }}, {{ students.all.count }} чел. <a class="black" href="{% url 'delete_lesson' lesson.group.club.pk lesson.group.pk lesson.pk %}"><i class="bi bi-trash3" style="color: #c93c11"></i></a></h3>
       {% else %}

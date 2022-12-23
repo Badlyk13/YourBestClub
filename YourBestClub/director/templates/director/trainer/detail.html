@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="row">
     <div class="col-12 mt-1 mb-1">
         <h5>Ставки: </h5>
@@ -23,7 +24,8 @@
 </div>
 <div class="row">
   <div class="col-12 p-3">
-  <p>Группы: Список названий групп-ссылки</p>
+
+  <p>Группы: {% for group in trainer_group %}<a class="black" href="{% url 'group_detail' group.club.pk group.pk %}">| {{ group }} |</a>{% endfor %}</p>
   </div>
 </div>
 {% endblock %}
