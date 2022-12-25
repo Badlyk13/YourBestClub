@@ -71,7 +71,7 @@
     <div class="row">
       <div class="col-12 text-center pt-3"><h3>{{ trainer.surname }} {{ trainer.name }} {{ trainer.soname }}</h3></div>
       <div class="col-12 text-center pt-3"> <p><a class='black' href="tel:{{ trainer.phone }}"><i class="bi bi-telephone"></i> {{ trainer.phone }}</a></p></div>
-      <div class="col-12 text-center"> <p><a class='black' href="{% url 'add_indiv_lesson' trainer.club.pk %}"><i class="bi bi-plus-square"></i> <small>Создать занятие</small> </a></p></div>
+      <div class="col-12 text-center"> <p><a class='black' href="{% url 'add_indiv_lesson' trainer.club.pk 'trainer' trainer.pk %}"><i class="bi bi-plus-square"></i> <small>Создать занятие</small> </a></p></div>
 
 
       {% comment %}

@@ -39,12 +39,18 @@
         </li>
       {% endfor %}
     </ul>
+    <br>
+  <small> Нажмите для смены статуса: <i class="bi bi-clipboard-check" style="font-size: 1.25rem; color: green;font-weight: bold;"></i> - Придет, <i class="bi bi-clipboard-x" style="font-size: 1.25rem; color: red; font-weight: bold;"></i> - Не придет.</small>
   </div>
 </div>
-{% if lesson.group.pk %}
-<p class="text-end"><a class='back' href="{% url 'group_schedule' lesson.group.club.pk lesson.group.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
-{% else %}
-<p class="text-end"><a class='back' href="{% url 'group_schedule' lesson.participant_set.all.first.student.group.club.pk lesson.participant_set.all.first.student.group.pk %}"><i class="bi bi-arrow-return-left"></i> Назад</a></p>
 
+<div class="row">
+  <div class="col text-end">
+    {% if lesson.group.pk %}
+      <button class='back-button' onclick="location.href='{% url 'group_schedule' lesson.group.club.pk lesson.group.pk %}';"><i class="bi bi-arrow-return-left"></i> Назад</button>
+    {% else %}
+      <button class='back-button' onclick="location.href='{% url 'group_schedule' lesson.participant_set.all.first.student.group.club.pk lesson.participant_set.all.first.student.group.pk %}';"><i class="bi bi-arrow-return-left"></i> Назад</button>
+  </div>
+</div>
 {% endif %}
 {% endblock %}

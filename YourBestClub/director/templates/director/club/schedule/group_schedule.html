@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load clubs_tags  %}
 
 {% block title %}
 
@@ -11,8 +12,10 @@
 
 <div class="row">
     <div class="col-12 mt-1 mb-1 text-center">
+
       {% if groups.all.count == 1 %}
-        <h3>Расписание {{ groups.all.first }} ({{ groups.all.first.student_set.all.count }} уч.)</h3>
+        {% get_students_qty_in_group groups.all.first.pk as student_qty %}
+        <h3>Расписание {{ groups.all.first }} ({{ student_qty }} уч.)</h3>
       {% else %}
         <h3>Расписание групп</h3>
       {% endif %}
@@ -27,7 +30,8 @@
                 {% if groups.all.count == 1 %}
                 <h5><a class="black" href="{% url 'add_lesson' club.pk group.pk %}"><i class="bi bi-plus-square"></i> Добавить занятие</a></h5>
                 {% else %}
-                {{ club.title }}, {{ group }} ({{ group.student_set.all.count }} уч.)
+                {% get_students_qty_in_group groups.pk as student_qty %}
+                {{ club.title }}, {{ group }} ({{ student_qty }} уч.)
                 {% endif %}
               </div>
             </div>

@@ -1,5 +1,5 @@
 from django import template
-from director.models import Participant
+from director.models import Participant, Student
 
 register = template.Library()
 
@@ -23,3 +23,9 @@ def get_participant_names(lesson_pk, short=True):
         else:
             students_names += f'{student.student.surname} {student.student.name[0]}. {student.student.soname[0]}' + ', '
     return students_names[:-2]
+
+
+@register.simple_tag
+def get_students_qty_in_group(group_pk):
+    students = Student.objects.filter(group__pk=group_pk, is_active=True).count()
+    return students

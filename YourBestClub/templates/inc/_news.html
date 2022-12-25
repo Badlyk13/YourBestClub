@@ -11,7 +11,7 @@
   <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
     {% get_news as news %}
     {% for new in news %}
-    <div class="col text-center">
+    <div class="col mb-5 text-center">
       <div class="card">
         <img src="{{ new.photo.url }}" class="card-img-top" alt="{{ new.title }}">
         <div class="card-img-overlay">

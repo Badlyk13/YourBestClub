@@ -40,11 +40,8 @@
         </div>
       </div>
   <!--    ##############################################################################################################-->
-      <div class="row mb-3 d-block d-sm-none">
-        {% include 'inc/_nav_dw.html' %}
-      </div>
-      <div class="row mt-3">
-        {% if not '/registration/' in request.get_full_path %}
+       <div class="row mt-3 mb-5">
+        {% if not '/register/' in request.get_full_path %}
           {% if not '/choice-type/' in request.get_full_path %}
 		        {% if not '/login/' in request.get_full_path %}
 				      {% include 'inc/_news.html' %}
@@ -52,6 +49,16 @@
           {% endif %}
         {% endif %}
       </div>
+      <div class="row mb-3 mt-3 d-block d-sm-none">
+        {% if not '/register/' in request.get_full_path %}
+          {% if not '/choice-type/' in request.get_full_path %}
+            {% if not '/login/' in request.get_full_path %}
+              {% include 'inc/_nav_dw.html' %}
+			      {% endif %}
+          {% endif %}
+        {% endif %}
+      </div>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

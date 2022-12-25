@@ -28,4 +28,10 @@
   <p>Группы: {% for group in trainer_group %}<a class="black" href="{% url 'group_detail' group.club.pk group.pk %}">| {{ group }} |</a>{% endfor %}</p>
   </div>
 </div>
+
+<div class="row">
+  <div class="col text-end">
+      <button class='back-button' onclick="location.href='{% url 'trainers' trainer.club.pk %}';"><i class="bi bi-arrow-return-left"></i> Назад</button>
+  </div>
+</div>
 {% endblock %}

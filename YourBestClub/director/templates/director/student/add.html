@@ -65,9 +65,16 @@
               {% endif %}
             {% endfor %}
           </select>
-        <p align="right">
-          <button class="save-button" type="submit">Сохранить</button>
-        </p>
+        <!--     Кнопки сохранить/удалить  -->
+        <div class="row">
+          <div class="col">
+            <button class='back-button' onclick="javascript:history.back(); return false;"><i class="bi bi-arrow-return-left"></i> Назад</button>
+          </div>
+          <div class="col text-end">
+            <button class="save-button" type="submit">Добавить</button>
+          </div>
+        </div>
+        <!--     Конец Кнопки сохранить/удалить  -->
       </div>
     </form>
   </div>

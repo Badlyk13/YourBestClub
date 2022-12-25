@@ -28,10 +28,14 @@
           <label for="{{ form.student.id_for_label }}">{{ form.student.label_tag }}</label>
           <select class="form-select" multiple name="student" id="{{ form.student.id_for_label }}" required size="10">
             {% for student in form.student %}
+            {% if user_type == 'student' and pk_user == student.data.value %}
+              <option value="{{ student.data.value }}" selected>{{ student.data.label }}</option>
+            {% else %}
               <option value="{{ student.data.value }}">{{ student.data.label }}</option>
+                        {% endif %}
             {% endfor %}
           </select>
-          <span class="helptext"><small> * Чтобы выбрать нескольких учеников используйте CTRL</small></span>
+          <span class="form-text d-none d-sm-block" style="color: #c5c5c5"><small> * Чтобы выбрать нескольких учеников используйте CTRL</small></span>
 
         </p>
 
@@ -40,7 +44,11 @@
           <select class="form-select"  name="trainer" id="{{ form.trainer.id_for_label }}" required multiple>
             {% for trainer in form.trainer %}
              {% if trainer.data.value %}
-              <option value="{{ trainer.data.value }}">{{ trainer.data.label }}</option>
+              {% if user_type == 'trainer' and pk_user == trainer.data.value %}
+                <option value="{{ trainer.data.value }}" selected>{{ trainer.data.label }}</option>
+              {% else %}
+                  <option value="{{ trainer.data.value }}">{{ trainer.data.label }}</option>
+              {% endif %}
             {% endif %}
             {% endfor %}
           </select>

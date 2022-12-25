@@ -3,12 +3,16 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from YourBestClub import settings
+from director.bot import get_update
 from director.finances import *
 from director.views import *
 from director.statistic import *
 
 urlpatterns = [
     path('403Forbidden/', forbidden_403, name='403Forbidden'),
+    path('bot/', csrf_exempt(get_update)),
+    path('login_tg/<int:mes_id>/', user_login_from_tg, name='login_tg'),
+
     path('', index, name='index'),
     path('login/', user_login, name='login'),
     path('logout/', LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL), name='logout'),
@@ -79,7 +83,7 @@ urlpatterns = [
 
     path('club/<int:pk>/lesson-type/', lesson_type_choice, name='lesson_type_choice'),
     path('club/<int:pk>/group/<int:pk_group>/add-lesson/', add_lesson, name='add_lesson'),
-    path('club/<int:pk>/add-individual/', add_indiv_lesson, name='add_indiv_lesson'),
+    path('club/<int:pk>/add-individual/<slug:user_type>/<int:pk_user>', add_indiv_lesson, name='add_indiv_lesson'),
 
     path('club/<int:pk>/group/<int:pk_group>/lesson/<int:pk_lesson>/delete/', delete_lesson, name='delete_lesson'),
     path('club/<int:pk>/group/<int:pk_group>/lesson/<int:pk_lesson>/confirm_delete_lesson/', confirm_delete_lesson,
@@ -115,7 +119,7 @@ urlpatterns = [
 
     # ============================== ФИНАНСЫ =============================
     path('club/<int:pk>/finances/', fin_clubs, name='fin_clubs'),
-    path('club/<int:pk>/finances/add_personal_payment', add_personal_payment, name='add_personal_payment'),
+    path('club/<int:pk>/finances/add_personal_payment/', add_personal_payment, name='add_personal_payment'),
     path('club/<int:pk>/finances/<type>/detail/', fin_details, name='fin_details'),
     path('withdrawal/', withdrawal, name='withdrawal'),
     path('refill/', refill, name='refill'),

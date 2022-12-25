@@ -270,7 +270,7 @@ class Lesson(models.Model):
     def save(self, *args, **kwargs):
         super(Lesson, self).save(*args, **kwargs)
         if self.is_group:
-            students = Student.objects.filter(group=self.group)
+            students = Student.objects.filter(group=self.group, is_active=True, is_deleted=False)
             for student in students:
                 participant = Participant.objects.create(lesson=self, student=student)
 

@@ -153,11 +153,13 @@ def stat_lessons(request, pk, year):
         if year == 0:
             try:
                 min_year = lessons.order_by('dt')[0].dt.year
+                max_year = lessons.order_by('-dt')[0].dt.year
+                print(max_year)
                 cur_year = min_year
-                while cur_year <= timezone.now().year:
+                while cur_year <= max_year:
                     qty_group = lessons.filter(dt__year=cur_year, is_group=True).count()
+                    print(cur_year, qty_group)
                     qty_ind = lessons_ind.filter(dt__year=cur_year).count()
-                    print(qty_ind)
                     data_title.append(cur_year)
                     data_qty_group.append(qty_group)
                     data_qty_ind.append(qty_ind)
@@ -173,7 +175,7 @@ def stat_lessons(request, pk, year):
                 qty_ind = lessons_ind.filter(dt__year=year, dt__month=i).count()
                 data_qty_group.append(qty_group)
                 data_qty_ind.append(qty_ind)
-
+        print(data_qty_group)
         return render(request, 'director/statistic/lessons.html', {'title': 'Статистика', 'club': club,
                                                                    'data_title': data_title,
                                                                    'data_qty_group': data_qty_group,
@@ -283,8 +285,9 @@ def stat_individuals(request, pk, year):
         if year == 0:
             try:
                 min_year = lessons_ind.order_by('dt')[0].dt.year
+                max_year = lessons_ind.order_by('-dt')[0].dt.year
                 cur_year = min_year
-                while cur_year <= timezone.now().year:
+                while cur_year <= max_year:
                     qty_ind = lessons_ind.filter(dt__year=cur_year).count()
                     data_title.append(cur_year)
                     data_qty_ind.append(qty_ind)

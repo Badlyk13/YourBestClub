@@ -9,6 +9,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 from YourBestClub.settings import TELEGRAM_BOT_URI
 from YourBestClub.utils import finding_user, create_password
+from director.bot import clear_chat, send_private_message, main_menu
 from director.forms import UserLoginForm, UserCreateForm, DirectorForm, TrainerForm, StudentForm, CreateClubForm, \
     CreateGroupForm, CreateSubscriptionForm, CreateLessonForm, CreateIndividualLessonForm, ClubMailingForm, \
     PersonalMailingForm
@@ -54,6 +55,29 @@ def user_login(request):
 
     form = UserLoginForm()
     return render(request, 'director/registration/login.html', {'form': form, 'title': 'Авторизация'})
+
+
+def user_login_from_tg(request, mes_id):
+    if request.method == 'POST':
+        form = UserLoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            message = 'Теперь вы можете пользоваться сервисом здесь или на <a href="https://yourbestclub.ru">сайте</a>. ' \
+                      'А вот подробная <a href="https://yourbestclub.ru">инструкция</a> ☺️'
+            s = clear_chat(user.director.tgID, mes_id)
+            send_private_message(user.director.tgID, message)
+
+            main_menu(user.director.tgID, 'director')
+            return render(request, 'director/registration/confirm_registration_from_tg.html', {'title': 'Авторизация телеграм'})
+        else:
+            messages.error(request, 'Пожалуйста, введите корректные логин и пароль. Оба поля могут быть чувствительны к регистру.')
+    else:
+        if request.user.is_authenticated:
+            return redirect('detail', pk=request.user.director.pk)
+
+    form = UserLoginForm()
+    return render(request, 'director/registration/login.html', {'form': form, 'title': 'Авторизация телеграм'})
 
 
 def choice_type(request):
@@ -220,7 +244,7 @@ def club_edit(request, pk):
                 form.instance.director = request.user.director
                 club = form.save()
                 messages.success(request, 'Изменения внесены!')
-                return redirect('detail', user_type='director', pk=club.director.pk)
+                return redirect('detail', pk=club.director.pk)
             else:
                 for field in form.errors:
                     error = form.errors[field].as_text()
@@ -248,7 +272,7 @@ def club_delete_confirm(request, pk):
     club = Club.objects.select_related('director').get(pk=pk)
     if request.user.director == club.director:
         club.delete()
-        return redirect('detail', user_type='director', pk=club.director.pk)
+        return redirect('detail', pk=club.director.pk)
     else:
         return redirect('403Forbidden')
 
@@ -271,10 +295,10 @@ def subscription_add(request, pk):
                 for field in form.errors:
                     error = form.errors[field].as_text()
                     messages.error(request, error + ' ' + field)
-        else:
-            form = CreateSubscriptionForm()
-            return render(request, f'director/club/subscription/add.html',
-                          {'title': 'Добавление абонемента', 'form': form, 'club': club})
+
+        form = CreateSubscriptionForm()
+        return render(request, f'director/club/subscription/add.html',
+                      {'title': 'Добавление абонемента', 'form': form, 'club': club})
     else:
         return redirect('403Forbidden')
 
@@ -305,10 +329,10 @@ def subscription_edit(request, pk, pk_subscription):
                 for field in form.errors:
                     error = form.errors[field].as_text()
                     messages.error(request, error + ' ' + field)
-        else:
-            form = CreateSubscriptionForm(instance=subscription)
-            return render(request, f'director/club/subscription/edit.html',
-                          {'title': 'Редактирование абонемента', 'form': form, 'subscription': subscription})
+
+        form = CreateSubscriptionForm(instance=subscription)
+        return render(request, f'director/club/subscription/edit.html',
+                      {'title': 'Редактирование абонемента', 'form': form, 'subscription': subscription})
     else:
         return redirect('403Forbidden')
 
@@ -702,7 +726,7 @@ def confirm_delete_lesson(request, pk, pk_group, pk_lesson):
 
 # -------------------------------------- РАСПИСАНИЕ. ДОБАВИТЬ ИНДИВ  -----------------------------
 @login_required
-def add_indiv_lesson(request, pk):
+def add_indiv_lesson(request, pk, user_type, pk_user):
     club = Club.objects.select_related('director').get(pk=pk)
     pk_group = ''
     tr_set = []
@@ -730,7 +754,8 @@ def add_indiv_lesson(request, pk):
             form.fields['trainer'].queryset = Trainer.objects.filter(club=club)
 
         return render(request, 'director/club/schedule/add_indiv.html',
-                      {'form': form, 'club': club, 'current_date': timezone.datetime.now()})
+                      {'form': form, 'club': club, 'current_date': timezone.datetime.now(),
+                       'user_type': user_type, 'pk_user': pk_user})
     else:
         return redirect('403Forbidden')
 

@@ -15,9 +15,9 @@ def fin_clubs(request, pk):
 
     if user:
         if pk == 0:
-            incoming = Payment.objects.filter(club__in=user.club_set.all(), amount__gt=0, is_personal=False).aggregate(Sum('amount'))['amount__sum']
-            expenses = Payment.objects.filter(club__in=user.club_set.all(), amount__lt=0, is_personal=False).aggregate(Sum('amount'))['amount__sum']
-            personal = Payment.objects.filter(club__in=user.club_set.all(), amount__lt=0, is_personal=True).aggregate(Sum('amount'))['amount__sum']
+            incoming = Payment.objects.filter(user__director=user, amount__gt=0, is_personal=False).aggregate(Sum('amount'))['amount__sum']
+            expenses = Payment.objects.filter(user__director=user, amount__lt=0, is_personal=False).aggregate(Sum('amount'))['amount__sum']
+            personal = Payment.objects.filter(user__director=user, amount__lt=0, is_personal=True).aggregate(Sum('amount'))['amount__sum']
             incoming = incoming if incoming is not None else 0
             expenses = expenses if expenses is not None else 0
             personal = personal if personal is not None else 0
@@ -58,15 +58,15 @@ def fin_details(request, pk, type):
                 end_date = form.cleaned_data.get('end')
                 if type == 'incoming':
                     _type = 'Доходы'
-                    payments = Payment.objects.filter(club__in=user.club_set.all(), amount__gt=0, is_personal=False,
+                    payments = Payment.objects.filter(user__director=user, amount__gt=0, is_personal=False,
                                                       created_at__range=(start_date, end_date))
                 if type == 'expenses':
                     _type = 'Расходы'
-                    payments = Payment.objects.filter(club__in=user.club_set.all(), amount__lt=0, is_personal=False,
+                    payments = Payment.objects.filter(user__director=user, amount__lt=0, is_personal=False,
                                                       created_at__range=(start_date, end_date))
                 if type == 'personal':
                     _type = 'Личные'
-                    payments = Payment.objects.filter(club__in=user.club_set.all(), amount__lt=0, is_personal=True,
+                    payments = Payment.objects.filter(user__director=user, amount__lt=0, is_personal=True,
                                                       created_at__range=(start_date, end_date))
 
             else:
@@ -95,13 +95,13 @@ def fin_details(request, pk, type):
             else:
                 if type == 'incoming':
                     _type = 'Доходы'
-                    payments = Payment.objects.filter(club__in=user.club_set.all(), amount__gt=0, is_personal=False)
+                    payments = Payment.objects.filter(user__director=user, amount__gt=0, is_personal=False)
                 if type == 'expenses':
                     _type = 'Расходы'
-                    payments = Payment.objects.filter(club__in=user.club_set.all(), amount__lt=0, is_personal=False)
+                    payments = Payment.objects.filter(user__director=user, amount__lt=0, is_personal=False)
                 if type == 'personal':
                     _type = 'Личные'
-                    payments = Payment.objects.filter(club__in=user.club_set.all(), amount__lt=0, is_personal=True)
+                    payments = Payment.objects.filter(user__director=user, amount__lt=0, is_personal=True)
         form = FilterFinDetailsForm()
         return render(request, 'director/finances/f_club_detail.html', {'title': f'Детализация финансов',
                                                                         'director': request.user.director,

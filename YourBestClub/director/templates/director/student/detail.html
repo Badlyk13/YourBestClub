@@ -30,7 +30,7 @@
 </div>
 <div class="row">
   <div class="col-12 p-3">
-    <p class="second"><a class='black' href="{% url 'add_indiv_lesson' student.group.club.pk %}"><i class="bi bi-plus-square"></i> Добавить индивидуальное занятие</a></p>
+    <p class="second"><a class='black' href="{% url 'add_indiv_lesson' student.group.club.pk 'student' student.pk %}"><i class="bi bi-plus-square"></i> Добавить индивидуальное занятие</a></p>
   </div>
 </div>
 {% endblock %}

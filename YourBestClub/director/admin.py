@@ -82,8 +82,20 @@ class ClubGroupAdmin(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('id', 'dt', 'is_group', 'group')
-    search_fields = ('id', 'dt', 'is_group', 'group')
+    list_display = ('id', 'dt', 'is_group', 'group', 'get_trainer', 'get_club')
+    search_fields = ('id', 'dt', 'is_group', 'group', 'get_trainer', 'get_club')
+
+    def get_trainer(self, obj):
+        return ", ".join([p.surname for p in obj.trainer.all()])
+
+    def get_club(self, obj):
+        if obj.is_group:
+            return f'{obj.group.club}'
+        else:
+            return f'{obj.trainer.first().club}'
+
+    get_trainer.short_description = 'Тренер(а)'
+    get_club.short_description = 'Клуб'
 
 
 @admin.register(Participant)

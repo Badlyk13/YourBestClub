@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load clubs_tags %}
 
 {% block title %}
 
@@ -24,12 +25,13 @@
       {% if groups %}
         {% for group in groups %}
           {% if group.club == club %}
+            {% get_students_qty_in_group group.pk as student_qty %}
             <div class="row">
               <div class="col">
                 {% if clubs.all.count == 1 %}
-                <h4><a class="black" href="{% url 'students' club.pk group.pk %}">{{ group }}</a>, ({{ group.student_set.all.count }} уч.)
+                <h4><a class="black" href="{% url 'students' club.pk group.pk %}">{{ group }}</a>, ({{ student_qty }} уч.)
                 {% else %}
-                 <a class="black" href="{% url 'club_detail' club.pk %}">{{ club.title }}</a> <small>{{ group }} ({{ group.student_set.all.count }} уч.)</small></h4>
+                 <a class="black" href="{% url 'club_detail' club.pk %}">{{ club.title }}</a> <small>{{ group }} ({{ student_qty }} уч.)</small></h4>
                 {% endif %}
               </div>
             </div>

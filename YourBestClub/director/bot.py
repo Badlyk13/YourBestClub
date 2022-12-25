@@ -8,6 +8,7 @@ from time import time, sleep
 import requests
 from django.db.models import Sum
 from django.shortcuts import redirect
+from django.utils import timezone
 from keyboa import Keyboa, Button
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, Update, WebAppInfo
 
@@ -16,7 +17,7 @@ from django.conf import settings
 from django.http import JsonResponse
 
 from YourBestClub.settings import BASE_HOST, TELEGRAM_BOT_URI
-from director.models import Club, Director, Trainer, Student, ClubGroup
+from director.models import Club, Director, Trainer, Student, ClubGroup, Payment
 from director.models import Lesson, Participant
 # from finances.models import DirectorPay
 from news.models import Post
@@ -183,8 +184,7 @@ def send_welcome(message):
             user_pk = message.text.split(' ')[-1][1:-1]
             user_type = message.text.split(' ')[-1][-1]
 
-
-# ================================= ПРИКРЕПЛЕНИЕ TG_ID ====================================
+            # ================================= ПРИКРЕПЛЕНИЕ TG_ID ====================================
             if command_type == 'c' and user_type == 'd':
                 bot.delete_message(message.chat.id, message.message_id)
                 director = Director.objects.get(pk=int(user_pk))
@@ -278,27 +278,24 @@ def handle_callback_query(call, **kwargs):
     print('call.data: ', call.data)
     menu = []
 
-
-# ================================= ОСНОВНОЕ МЕНЮ ЛК ====================================
+    # ================================= ОСНОВНОЕ МЕНЮ ЛК ====================================
     if call.data.startswith("mainmenu_"):
         user_type = call.data.split('_')[1]
         bot.delete_message(call.message.chat.id, call.message.message_id)
         main_menu(call.message.chat.id, user_type)
         return True
 
-
-# ================================= ОТМЕНА ПОСЕЩЕНИИЯ ====================================
+    # ================================= ОТМЕНА ПОСЕЩЕНИИЯ ====================================
     if call.data.startswith("participant_status_false"):
         pk_participant = call.data.split('&')[1]
         participant = Participant.objects.get(pk=int(pk_participant))
         participant.status = False
         participant.save()
         msg = bot.send_message(call.message.chat.id,
-                               f'✔️ Участие в занятии {datetime.strftime(participant.lesson.dt, "%d.%m.%Y %H:%M")} <b>отменено</b>!')
+                               f'✔️ Участие в занятии {timezone.datetime.strftime(participant.lesson.dt, "%d.%m.%Y %H:%M")} <b>отменено</b>!')
         return True
 
-
-# ================================= КНОПКИ ОСНОВНОГО МЕНЮ ДИРЕКТОРА ====================================
+    # ================================= КНОПКИ ОСНОВНОГО МЕНЮ ДИРЕКТОРА ====================================
     if call.data == "🏫 Мои клубы":
         clubs = Director.objects.get(tgID=call.message.chat.id).club_set.all()
         if clubs:
@@ -306,7 +303,7 @@ def handle_callback_query(call, **kwargs):
                 menu.append({f'{club.title}, {club.city}': f'club_{club.pk}'})
             keyboard1 = Keyboa(items=menu, items_in_row=2).keyboard
             button_footer = [
-                {'text': '➕ Добавить клуб', 'web_app': WebAppInfo(url=settings.BASE_HOST + '/club/create/')},
+                {'text': '➕ Добавить клуб', 'web_app': WebAppInfo(url=settings.BASE_HOST + '/club/add-club/')},
                 {'◀️ Назад': 'mainmenu_director'}]
             keyboard2 = Keyboa(items=button_footer).keyboard
             keyboard = Keyboa.combine(keyboards=(keyboard1, keyboard2))
@@ -315,7 +312,7 @@ def handle_callback_query(call, **kwargs):
         else:
             markup = InlineKeyboardMarkup()
             button = InlineKeyboardButton(text='➕ Добавить клуб',
-                                          web_app=WebAppInfo(url=settings.BASE_HOST + '/club/create/'))
+                                          web_app=WebAppInfo(url=settings.BASE_HOST + '/club/add-club/'))
             button_back = InlineKeyboardButton(text='◀️ Назад', callback_data=f'mainmenu_director')
             markup.add(button).add(button_back)
             msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
@@ -324,25 +321,40 @@ def handle_callback_query(call, **kwargs):
                                         reply_markup=markup)
         return True
 
-
-# =================================  ДИРЕКТОР ФИНАНСЫ ====================================
-    # if call.data == "director_finance":
-    #     menu = [{"💳 Мои расходы": 'director_finance&my-expenses'}, {"💰 Доходы": 'director_finance&income'},
-    #             {"💵 Зарплаты": 'director_finance&salary'}, {'💸 Пополнить': 'director_finance&refill'},
-    #             {'◀️ Назад': 'mainmenu_director'}]
-    #     keyboard = Keyboa(items=menu, items_in_row=2)
-    #     balance = \
-    #         DirectorPay.objects.filter(director=Director.objects.get(tgID=call.message.chat.id)).aggregate(
-    #             Sum('amount'))[
-    #             'amount__sum']
-    #     if balance is None:
-    #         balance = 0
-    #     msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-    #                                 text=f'💎 Баланс: <b>{balance}₽</b>',
-    #                                 reply_markup=keyboard())
-
-
-# =================================  ДИРЕКТОР НАСТРОЙКИ ====================================
+    # =================================  ДИРЕКТОР ФИНАНСЫ ====================================
+    if call.data == 'director_finance':
+        user = Director.objects.get(tgID=call.message.chat.id)
+        balance = Payment.objects.filter(user__director=user, is_personal=False).aggregate(Sum('amount'))['amount__sum']
+        balance = balance if balance is not None else 0
+        menu = [
+            [{'text': "💵 Вывести", 'web_app': WebAppInfo(url=f'{BASE_HOST}/withdrawal/')},
+             {'text': '💸 Пополнить', 'web_app': WebAppInfo(url=f'{BASE_HOST}/refill/')}],
+            [{'text': '➕ Добавить расходы', 'web_app': WebAppInfo(url=f'{BASE_HOST}/club/0/finances/add_personal_payment/')},
+             {'◀️ Назад': 'mainmenu_director'}]
+        ]
+        keyboard = Keyboa(items=menu)
+        incoming = \
+            Payment.objects.filter(user__director=user, amount__gt=0, is_personal=False).aggregate(Sum('amount'))[
+                'amount__sum']
+        expenses = \
+            Payment.objects.filter(user__director=user, amount__lt=0, is_personal=False).aggregate(Sum('amount'))[
+                'amount__sum']
+        personal = Payment.objects.filter(user__director=user, amount__lt=0, is_personal=True).aggregate(Sum('amount'))[
+            'amount__sum']
+        incoming = incoming if incoming is not None else 0
+        expenses = expenses if expenses is not None else 0
+        personal = personal if personal is not None else 0
+        bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                              text=f'<b>💸 Финансы</b>\n\n'
+                                   f'💎 Баланс: <b>{balance}₽</b>\n\n'
+                                   f'Общая статистика:\n<i>Доходы:</i> <b>{incoming}₽</b>, <i>Расходы:</i> <b>{expenses}₽</b>, '
+                                   f'<i>Личные:</i> <b>{personal}₽</b>\n'
+                                   f'--------------------\n'
+                                   f'<b>Итого: {incoming + expenses + personal}₽</b>\n',
+                              reply_markup=keyboard()
+                              )
+        return True
+    # =================================  ДИРЕКТОР НАСТРОЙКИ ====================================
     if call.data == "director_settings":
         menu.append([{'◀️ Назад': 'mainmenu_director'}])
         keyboard = Keyboa(items=menu)
@@ -350,8 +362,7 @@ def handle_callback_query(call, **kwargs):
                                     text='🤷🏼‍♂️ Здесь должны быть какие-то настройки, но пока ничего нет потому что я еще не придумал какие...',
                                     reply_markup=keyboard())
 
-
-# =================================  ДИРЕКТОР НОВОСТИ ====================================
+    # =================================  ДИРЕКТОР НОВОСТИ ====================================
     if call.data == "director_news":
         menu.append([{'◀️ Назад': 'mainmenu_director'}])
         keyboard = Keyboa(items=menu)
@@ -365,8 +376,7 @@ def handle_callback_query(call, **kwargs):
         msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                     text=text, reply_markup=keyboard())
 
-
-# **************************** Обработка нажатий на кнопки club_ ********************************************
+    # **************************** Обработка нажатий на кнопки club_ ********************************************
     if call.data.startswith('club_'):
         menu = []
         if '&' not in call.data:
@@ -376,9 +386,11 @@ def handle_callback_query(call, **kwargs):
                 [{"👨🏼‍🏫 Сотрудники": f'club_{club.pk}&trainers'}, {"🗂 Группы": f'club_{club.pk}&groups'}],
                 [{"👫 Ученики": f'club_{club.pk}&students'}, {"📆 Расписание": f'club_{club.pk}&schedule'}],
                 [{"📊 Статистика": f'club_{club.pk}&statistic'}, {"💸 Финансы": f'club_{club.pk}&finances'}],
-                [{'text': "✉️ Связь", 'web_app': WebAppInfo(url=f'{BASE_HOST}club/{club.pk}/mailing/')},
+                [{'text': "✉️ Связь", 'web_app': WebAppInfo(url=f'{BASE_HOST}/club/{club.pk}/mailing/')},
                  {"🪄 Вклад в будущее": f'club_{club.pk}&donation'}],
-                [{'text': '📝 Редактировать', 'web_app': WebAppInfo(url=f'{BASE_HOST}/club/{club.pk}/edit/')}, {'◀️ Назад': 'mainmenu_director'}]
+                [{'text': '📝 Редактировать', 'web_app': WebAppInfo(url=f'{BASE_HOST}/club/{club.pk}/edit/')},
+                 {'🎉 Мероприятия': f'club_{club.pk}&events'}],
+                [{'◀️ Назад': 'mainmenu_director'}, ]
             ]
             keyboard = Keyboa(items=menu)
             msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
@@ -394,14 +406,14 @@ def handle_callback_query(call, **kwargs):
             if choice == 'trainers':
                 warning = ''
                 trainers = Trainer.objects.filter(club=club)
-                url = settings.BASE_HOST + f'/club/{int(club.pk)}/add-trainer/0/'
+                url = settings.BASE_HOST + f'/club/{int(club.pk)}/trainer-add/'
                 link = requests.get(f'https://clck.ru/--?url={TELEGRAM_BOT_URI}r{club.pk}t').text
                 if trainers:
                     for trainer in trainers:
                         if trainer.user is None:
                             warning = '⚠️ '
                         menu.append({
-                                        f'{warning}{trainer.surname} {trainer.name[0]}.{trainer.soname[0]}.': f'trainer_{trainer.pk}'})
+                            f'{warning}{trainer.surname} {trainer.name[0]}.{trainer.soname[0]}.': f'trainer_{trainer.pk}'})
                     keyboard1 = Keyboa(items=menu, items_in_row=2).keyboard
                     button_footer = [
                         {'text': '➕ Добавить тренера', 'web_app': WebAppInfo(url=url)},
@@ -429,7 +441,7 @@ def handle_callback_query(call, **kwargs):
 
             if choice == 'groups':
                 groups = ClubGroup.objects.filter(club=club)
-                url = settings.BASE_HOST + f'/club/{int(club.pk)}/add-group/'
+                url = settings.BASE_HOST + f'/club/{int(club.pk)}/group-add/'
                 if groups:
                     for group in groups:
                         menu.append({f'{group.title}': f'group_{group.pk}'})
@@ -452,14 +464,20 @@ def handle_callback_query(call, **kwargs):
                                                 reply_markup=markup)
 
             if choice == 'students':
-                students = Student.objects.filter(group__in=ClubGroup.objects.filter(club=club))
+                students = Student.objects.filter(group__in=ClubGroup.objects.filter(club=club), is_deleted=False)
                 warning = ''
                 if students:
                     for student in students:
                         if student.user is None:
                             warning = '⚠️ '
-                        menu.append(
-                            {f'{warning}{student.surname} {student.name[0]}.{student.soname[0]}.': f'student_{student.pk}'})
+                        if student.is_active:
+                            menu.append(
+                                {
+                                    f'{warning}{student.surname} {student.name[0]}.{student.soname[0]}.': f'student_{student.pk}'})
+                        else:
+                            menu.append(
+                                {
+                                    f'⛔️ {student.surname} {student.name[0]}.{student.soname[0]}.': f'student_{student.pk}'})
                     menu.append({'◀️ Назад': f'club_{club.pk}'})
                     keyboard = Keyboa(items=menu, items_in_row=3)
                     msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
@@ -483,11 +501,9 @@ def handle_callback_query(call, **kwargs):
                         if participant.student.group in groups:
                             if lesson not in filtered_lessons_individuals:
                                 filtered_lessons_individuals.append(lesson)
-
                 if groups:
                     for group in groups:
                         lessons_group = Lesson.objects.filter(group=group)
-
                         if lessons_group:
                             text += f'<b>{group.title}</b>, групповые занятия:\n'
                             for lesson in lessons_group:
@@ -495,23 +511,24 @@ def handle_callback_query(call, **kwargs):
                                 trainers_str = ''
                                 for trainer in trainers:
                                     trainers_str += f'{trainer}, '
-                                text += f'{datetime.strftime(lesson.dt, "%d.%m.%Y %H:%M")} - {trainers_str[:-2]}\n'
+                                text += f'{timezone.datetime.strftime(lesson.dt, "%d.%m.%Y %H:%M")} - {trainers_str[:-2]}\n'
                             text += f'\n'
                         else:
                             text += f'<b>{group.title}</b>, групповых занятий нет!\n'
                 else:
                     text = f'<b>⚠️ Нет ни одной группы!</b>\n'
                 text += '\n'
-
                 if filtered_lessons_individuals:
                     for lesson in filtered_lessons_individuals:
                         students = ''
-                        for student in lesson.participant_set.all():
-                            students += f'{student.student}' + ', '
+                        print('lesson', lesson)
+                        for participant in lesson.participant_set.all():
+                            if participant.student.soname not in students:
+                                students += f'{participant.student.surname} {participant.student.name[0]}. {participant.student.soname[0]}., '
                         trainers = ''
                         for trainer in lesson.trainer.all():
                             trainers += f'{trainer.surname} {trainer.name[0]}. {trainer.soname[0]}., '
-                        text += f'{datetime.strftime(lesson.dt, "%d.%m.%Y %H:%M")} - {students[:-2]} ({trainers[:-2]})\n'
+                        text += f'{timezone.datetime.strftime(lesson.dt, "%d.%m.%Y %H:%M")} - {students[:-2]} ({trainers[:-2]})\n'
                 else:
                     text += f'<b> Индивидуальных занятий нет! </b>\n'
 
@@ -519,7 +536,7 @@ def handle_callback_query(call, **kwargs):
                 text += f'\n💡 <i>Чтобы добавить расписание — перейдите в необходимую группу.</i>'
                 keyboard = Keyboa(items=menu, items_in_row=2)
                 msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f'📆 {club.title}, расписание:\n\n{text}',
+                                            text=f'📆 <b>{club.title}</b>, расписание:\n\n{text}',
                                             reply_markup=keyboard())
 
             if choice == 'statistic':
@@ -531,12 +548,26 @@ def handle_callback_query(call, **kwargs):
                                             reply_markup=keyboard())
 
             if choice == 'finances':
-                text = f'Здесь предполагается какие то финансы. Это как раз тоже на подумать, {call.message.chat.first_name}...'
-                menu.append({'◀️ Назад': f'club_{club.pk}'})
-                keyboard = Keyboa(items=menu, items_in_row=2)
-                msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f'💸 {club.title}, финансы:\n\n{text}',
-                                            reply_markup=keyboard())
+                menu = [
+                    [{'text': '➕ Добавить расходы',
+                      'web_app': WebAppInfo(url=f'{BASE_HOST}/club/{club.pk}/finances/add_personal_payment/')},
+                     {'◀️ Назад': f'club_{club.pk}'}]
+                ]
+                keyboard = Keyboa(items=menu)
+                incoming = Payment.objects.filter(club=club, amount__gt=0, is_personal=False).aggregate(Sum('amount'))['amount__sum']
+                expenses = Payment.objects.filter(club=club, amount__lt=0, is_personal=False).aggregate(Sum('amount'))['amount__sum']
+                personal = Payment.objects.filter(club=club, amount__lt=0, is_personal=True).aggregate(Sum('amount'))['amount__sum']
+                incoming = incoming if incoming is not None else 0
+                expenses = expenses if expenses is not None else 0
+                personal = personal if personal is not None else 0
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                      text=f'<b>💸 <b>{club.title}</b>, Финансы</b>\n\n'
+                                           f'<i>Доходы:</i> <b>{incoming}₽</b>, <i>Расходы:</i> <b>{expenses}₽</b>, '
+                                           f'<i>Личные:</i> <b>{personal}₽</b>\n'
+                                           f'--------------------\n'
+                                           f'<b>Итого: {incoming + expenses + personal}₽</b>\n',
+                                      reply_markup=keyboard()
+                                      )
 
             if choice == 'mailing':
                 menu = [{'👨‍👦‍👦 Всем': f'mailing_club_{club.pk}'}, {'👨🏼‍🏫 Тренерам': f'mailing_trainers_{club.pk}'},
@@ -555,8 +586,15 @@ def handle_callback_query(call, **kwargs):
                                             text=f'💸 {club.title}, вклад в будущее:\n\n{text}',
                                             reply_markup=keyboard())
 
+            if choice == 'events':
+                text = f'Здесь предполагается какие то мероприятия. Надо доработать, {call.message.chat.first_name}...'
+                menu.append({'◀️ Назад': f'club_{club.pk}'})
+                keyboard = Keyboa(items=menu, items_in_row=2)
+                msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                            text=f'💸 {club.title}, мероприятия:\n\n{text}',
+                                            reply_markup=keyboard())
 
-# **************************** Обработка нажатий на кнопки trainer_ ********************************************
+    # **************************** Обработка нажатий на кнопки trainer_ ********************************************
     if call.data.startswith('trainer_'):
         menu = []
         if '&' in call.data:
@@ -574,17 +612,15 @@ def handle_callback_query(call, **kwargs):
                         groups.append(lesson.group)
                         groups_text += f'{lesson.group.title}, '
             club = trainer.club
-            birthday = "Не указан"
-            if trainer.birthday:
-                birthday = datetime.strftime(trainer.birthday, "%d.%m.%Y")
             statistic = 'Здесь какая то статистика 1.\nЗдесь какая то статистика 2.\nЗдесь какая то статистика 3.'
+
             if trainer.user is not None:
                 button_footer = [
                     {'text': '📝 Редактировать', 'web_app': WebAppInfo(url=f'{BASE_HOST}/trainer/{trainer.pk}/edit/')},
                     {'◀️ Назад': f'club_{club.pk}&trainers'}]
                 keyboard2 = Keyboa(items=button_footer).keyboard
                 keyboard = Keyboa.combine(keyboards=(keyboard2,))
-                text = f'<b>👨🏼‍🏫 {trainer}</b>\n\n🎂 {birthday}\n📞 <a href="tel:{trainer.phone}">{trainer.phone}</a>\n' \
+                text = f'<b>👨🏼‍🏫 {trainer}</b>\n\n📞 <a href="tel:{trainer.phone}">{trainer.phone}</a>\n' \
                        f'🗂 {groups_text[:-2]}\n📊 Статистика:\n{statistic}'
                 msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text=text, reply_markup=keyboard)
@@ -599,8 +635,7 @@ def handle_callback_query(call, **kwargs):
                                             text=text, reply_markup=keyboard)
                 return True
 
-
-# **************************** Обработка нажатий на кнопки group_ ********************************************
+    # **************************** Обработка нажатий на кнопки group_ ********************************************
     if call.data.startswith('group_'):
         if '&' not in call.data:
             menu = []
@@ -615,7 +650,7 @@ def handle_callback_query(call, **kwargs):
                     for trainer in lesson.trainer.all():
                         if str(trainer) not in trainers_str:
                             trainers_str += str(trainer) + ', '
-                    schedule_text += f"{datetime.strftime(lesson.dt, ' %d.%m.%Y %H:%M')} — {trainers_str[:-2]}\n"
+                    schedule_text += f"{timezone.datetime.strftime(lesson.dt, ' %d.%m.%Y %H:%M')} — {trainers_str[:-2]}\n"
             text = f"👨🏼‍🏫 {club.title}, <b>{group.title}</b>:\n\n" \
                    f"{schedule_text}\n"
             lessons_individuals = Lesson.objects.filter(is_group=False).filter(
@@ -623,12 +658,13 @@ def handle_callback_query(call, **kwargs):
             if lessons_individuals:
                 for lesson in lessons_individuals:
                     students = ''
-                    for student in lesson.participant_set.all():
-                        students += f'{student.student}' + ', '
+                    for participant in lesson.participant_set.all():
+                        if participant.student.soname not in students:
+                            students += f'{participant.student.surname} {participant.student.name[0]}. {participant.student.soname[0]}., '
                     trainers = ''
                     for trainer in lesson.trainer.all():
                         trainers += f'{trainer.surname} {trainer.name[0]}. {trainer.soname[0]}., '
-                    text += f'{datetime.strftime(lesson.dt, "%d.%m.%Y %H:%M")} - {students[:-2]} ({trainers[:-2]})\n'
+                    text += f'{timezone.datetime.strftime(lesson.dt, "%d.%m.%Y %H:%M")} - {students[:-2]} ({trainers[:-2]})\n'
             else:
                 text += f'<b>Индивидуальных занятий нет! </b>\n'
             button_footer = [{'👫 Ученики': f'group_{group.pk}&students'},
@@ -651,14 +687,17 @@ def handle_callback_query(call, **kwargs):
             choice = mes_data[1].split('&')[1]
 
             if choice == 'students':
-                students = Student.objects.filter(group=group)
+                students = Student.objects.filter(group=group, is_deleted=False)
                 warning = ''
                 if students:
                     for student in students:
                         if student.user is None:
                             warning = '⚠️ '
+                        if not student.is_active:
+                            warning = '⛔️ '
                         menu.append(
-                            {f'{warning}{student.surname} {student.name[0]}.{student.soname[0]}.': f'student_{student.pk}'})
+                            {
+                                f'{warning}{student.surname} {student.name[0]}.{student.soname[0]}.': f'student_{student.pk}'})
                     menu.append({'◀️ Назад': f'group_{group.pk}'})
                     keyboard = Keyboa(items=menu, items_in_row=3)
                     msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
@@ -666,7 +705,7 @@ def handle_callback_query(call, **kwargs):
                                                 reply_markup=keyboard())
                 else:
                     menu = [{'text': '➕ Добавить ученика',
-                             'web_app': WebAppInfo(url=f'{BASE_HOST}/club/{club.pk}/group/{group.pk}/add-student/0/')},
+                             'web_app': WebAppInfo(url=f'{BASE_HOST}/club/{club.pk}/group/{group.pk}/student-add/')},
                             {'◀️ Назад': f'group_{group.pk}'}]
                     keyboard = Keyboa(items=menu, items_in_row=1)
                     msg = bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
@@ -681,8 +720,7 @@ def handle_callback_query(call, **kwargs):
                                             text=f'📊 {club.title}, <b>{group.title}</b>, статистика:\n\n{text}',
                                             reply_markup=keyboard())
 
-
-# **************************** Обработка нажатий на кнопки student_ ********************************************
+    # **************************** Обработка нажатий на кнопки student_ ********************************************
     if call.data.startswith('student_'):
         if '&' not in call.data:
             menu = []
@@ -697,7 +735,8 @@ def handle_callback_query(call, **kwargs):
             if student.user is not None:
                 button_footer = [
                     {'text': '📝 Редактировать', 'web_app': WebAppInfo(url=f'{BASE_HOST}/student/{student.pk}/edit/')},
-                    {'✉️ Сообщение': f'mailing_personal&student_{student.pk}'}, {'◀️ Назад': f'group_{group.pk}&students'}]
+                    {'✉️ Сообщение': f'mailing_personal&student_{student.pk}'},
+                    {'◀️ Назад': f'group_{group.pk}&students'}]
                 keyboard2 = Keyboa(items=button_footer).keyboard
                 keyboard = Keyboa.combine(keyboards=(keyboard2,))
                 text = f'<b>👨🏼‍🏫 {student}</b>\n\n🎂 {birthday}\n👤 {student.agent_name}\n' \
@@ -718,8 +757,7 @@ def handle_callback_query(call, **kwargs):
         else:
             pass
 
-
-# **************************** Обработка нажатий на кнопки mailing_ ********************************************
+    # **************************** Обработка нажатий на кнопки mailing_ ********************************************
     if call.data.startswith('mailing_personal'):
         menu = []
         mes_data = call.data.split('&')
@@ -735,7 +773,7 @@ def handle_callback_query(call, **kwargs):
             recipient_data = Student.objects.filter(pk=int(recipient)).first()
             club = recipient_data.group.club
 
-        link = f'{BASE_HOST}club/{club.pk}/personal-mailing/<int:user_type>/<int:pk_user>/'
+        link = f'{BASE_HOST}/personal-mailing/<int:user_type>/<int:pk_user>/'
 
 
 # **************************** Обработка любых текстовых сообщений_ ********************************************
